@@ -17,8 +17,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/test/**",
-                                "/health",
-                                "/presentation/**"
+                                "/analyze/**",
+                                "/presentation/**",
+                                "/realtime/**"
                         ).permitAll()   // 👈 인증 제외
                         .anyRequest().authenticated()
                 );
