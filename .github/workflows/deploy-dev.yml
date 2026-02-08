@@ -41,7 +41,7 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: yourdockerhub/your-project-dev
+          images: juheenoh/talki_spring
           tags: |
             type=ref,event=branch
             type=sha
