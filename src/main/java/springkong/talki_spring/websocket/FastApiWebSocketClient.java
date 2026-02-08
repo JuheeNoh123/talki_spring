@@ -15,7 +15,7 @@ public class FastApiWebSocketClient {
         ReactorNettyWebSocketClient client = new ReactorNettyWebSocketClient();
 
         URI uri = URI.create(
-                "ws://curelessly-unusable-jolanda.ngrok-free.dev:8000/realtime?type=" + presentationType
+                "wss://curelessly-unusable-jolanda.ngrok-free.dev:8000/realtime?type=" + presentationType
         );
 
         return client.execute(uri, session -> {
