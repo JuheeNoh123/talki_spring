@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        //System.out.println("🔥 registerWebSocketHandlers called");
+        System.out.println("🔥 registerWebSocketHandlers called");
         registry.addHandler(handler, "/realtime")
                 .setAllowedOrigins("*");
 
