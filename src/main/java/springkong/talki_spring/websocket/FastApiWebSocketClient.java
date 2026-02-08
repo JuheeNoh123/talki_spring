@@ -15,7 +15,7 @@ public class FastApiWebSocketClient {
         ReactorNettyWebSocketClient client = new ReactorNettyWebSocketClient();
 
         URI uri = URI.create(
-                "ws://localhost:8000/realtime?type=" + presentationType
+                "ws://182.209.235.80:8000/realtime?type=" + presentationType
         );
 
         return client.execute(uri, session -> {
