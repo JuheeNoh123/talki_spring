@@ -19,7 +19,7 @@ public class WebClientConfig {
                 .protocol(HttpProtocol.HTTP11)
                 .responseTimeout(Duration.ofMinutes(5)); //타임아웃 대비 FastAPI 응답을 최대 5분까지 기다린다
         return WebClient.builder()
-                .baseUrl("https://curelessly-unusable-jolanda.ngrok-free.dev")
+                .baseUrl("https://localhost:8000")
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
