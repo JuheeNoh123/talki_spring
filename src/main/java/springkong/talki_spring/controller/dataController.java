@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springkong.talki_spring.dto.FeedbackEvent;
+import springkong.talki_spring.dto.Test;
 import springkong.talki_spring.service.AnalyzeService;
 import springkong.talki_spring.service.FeedbackService;
 
@@ -17,6 +18,15 @@ import java.util.List;
 public class dataController {
     private final FeedbackService feedbackService;
     private final AnalyzeService analyzeService;
+    @GetMapping("/analyze/get")
+    public String testGet() {
+        return "GET OK";
+    }
+
+    @PostMapping("/analyze/get")
+    public String testPost(@RequestBody Test test) {
+        return test.getName();
+    }
     //발표 피드백 조회
     @GetMapping("/presentation/{presentationId}/feedbacks")
     public List<FeedbackEvent> getFeedbacks(
