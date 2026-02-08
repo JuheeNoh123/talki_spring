@@ -24,7 +24,7 @@ public class dataController {
     public String testGet() {
         return fastApiWebClient
                 .get()                           // ✅ GET
-                .uri("/health")                  // ✅ FastAPI health
+                .uri("http://localhost:8000/health")                  // ✅ FastAPI health
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
