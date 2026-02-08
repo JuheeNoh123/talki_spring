@@ -15,13 +15,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/test/**",
-                                "/analyze/**",
-                                "/presentation/**",
-                                "/realtime/**"
-                        ).permitAll()   // 👈 인증 제외
-                        .anyRequest().authenticated()
+//                        .requestMatchers(
+//                                "/test/**",
+//                                "/analyze/**",
+//                                "/presentation/**",
+//                                "/realtime/**"
+//                        ).permitAll()   // 👈 인증 제외
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
