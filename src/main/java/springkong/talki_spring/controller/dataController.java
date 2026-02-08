@@ -33,5 +33,10 @@ public class dataController {
         return ResponseEntity.ok(
                 analyzeService.forwardToFastApi(file, presentationType)
         );
+//        analyzeService.forwardToFastApi(file, presentationType);
+//
+//        return ResponseEntity.ok(
+//                "analysis started"
+//        );
     }
 }
