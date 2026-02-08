@@ -98,12 +98,3 @@ jobs:
             cd ~/dev
             sh ./config/scripts/deploy.sh
 
-            sudo docker stop $(sudo docker ps -aq) || true
-            sudo docker rm $(sudo docker ps -aq) || true
-
-            docker pull juheenoh/talki_spring:tagname
-            docker run -d \
-              --name backend-server \
-              -p 8080:8080 \
-              --restart unless-stopped \
-              juheenoh/talki_spring:tagname
