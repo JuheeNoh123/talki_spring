@@ -96,5 +96,6 @@ jobs:
           key: ${{ secrets.KEY_DEV }}
           script: |
             cd ~/dev
+            export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             sh ./config/scripts/deploy.sh
 

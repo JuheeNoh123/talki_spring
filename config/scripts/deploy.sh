@@ -16,6 +16,7 @@ docker pull $IMAGE
 docker run -d \
   --name backend-server \
   --network host \
+  -e REDIS_PASSWORD=$REDIS_PASSWORD \
   --restart unless-stopped \
   $IMAGE
 
