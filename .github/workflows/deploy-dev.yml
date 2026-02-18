@@ -24,13 +24,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # application-dev.yml 생성 (GitHub Secrets → 파일)
-      - name: Make application-dev.yml
-        run: |
-          mkdir -p ./src/main/resources
-          echo "$PROPERTIES_DEV" > ./src/main/resources/application-dev.yml
-        env:
-          PROPERTIES_DEV: ${{ secrets.PROPERTIES_DEV }}
+#      # application-dev.yml 생성 (GitHub Secrets → 파일)
+#      - name: Make application-dev.yml
+#        run: |
+#          mkdir -p ./src/main/resources
+#          echo "$PROPERTIES_DEV" > ./src/main/resources/application-dev.yml
+#        env:
+#          PROPERTIES_DEV: ${{ secrets.PROPERTIES_DEV }}
 
       # Gradle 빌드
       - name: Build with Gradle
