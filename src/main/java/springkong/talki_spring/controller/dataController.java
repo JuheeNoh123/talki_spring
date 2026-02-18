@@ -2,6 +2,7 @@ package springkong.talki_spring.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +21,13 @@ public class dataController {
     private final FeedbackService feedbackService;
     private final AnalyzeService analyzeService;
     private final WebClient fastApiWebClient;
+
+
     @GetMapping("/analyze/get")
     public String testGet() {
         return fastApiWebClient
                 .get()                           // ✅ GET
-                .uri("http://localhost:8000/health")                  // ✅ FastAPI health
+                .uri("/health")                  // ✅ FastAPI health
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();

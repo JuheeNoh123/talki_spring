@@ -1,5 +1,6 @@
 package springkong.talki_spring.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -13,13 +14,16 @@ import java.time.Duration;
 @Configuration
 public class WebClientConfig {
 
+    @Value("${fastapi.url}")
+    private String fastApiUrl;
+
     @Bean
     public WebClient fastApiWebClient() {
         HttpClient httpClient = HttpClient.create()
                 .protocol(HttpProtocol.HTTP11)
                 .responseTimeout(Duration.ofMinutes(5)); //타임아웃 대비 FastAPI 응답을 최대 5분까지 기다린다
         return WebClient.builder()
-                .baseUrl("https://localhost:8000")
+                .baseUrl(fastApiUrl)
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }

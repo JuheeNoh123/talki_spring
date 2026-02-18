@@ -20,3 +20,5 @@ server:
   tomcat:
     max-swallow-size: -1
     max-http-form-post-size: -1
+fastapi:
+  url: http://43.201.182.246:8000
