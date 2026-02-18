@@ -16,6 +16,7 @@ docker pull $IMAGE
 docker run -d \
   --name backend-server \
   -p 8080:8080 \
+  --add-host=host.docker.internal:host-gateway \
   --restart unless-stopped \
   $IMAGE
 
