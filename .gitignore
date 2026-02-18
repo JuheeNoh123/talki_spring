@@ -37,4 +37,5 @@ out/
 .vscode/
 
 *.yml
+!src/main/resources/application.yml
 !.github/workflows/*.yml
