@@ -11,7 +11,7 @@ import java.net.URI;
 public class FastApiWebSocketClient {
     private WebSocketSession fastApiSession;
 
-    public Mono<Void> connect(String presentationType) {
+    public Mono<Void> connect(String presentationType, java.util.function.Consumer<String> onMessage) {
         ReactorNettyWebSocketClient client = new ReactorNettyWebSocketClient();
 
         URI uri = URI.create(
@@ -25,6 +25,7 @@ public class FastApiWebSocketClient {
                     .map(WebSocketMessage::getPayloadAsText)
                     .doOnNext(msg -> {
                         System.out.println("[FastAPI → Spring] " + msg);
+                        onMessage.accept(msg);
                     })
                     .then();
         });

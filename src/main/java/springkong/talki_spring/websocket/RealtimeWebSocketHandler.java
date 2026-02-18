@@ -35,7 +35,13 @@ public class RealtimeWebSocketHandler extends TextWebSocketHandler { //presentat
         }
 
         // ✅ 여기까지 왔으면 정상
-        fastApiClient.connect(presentationType).subscribe();
+        fastApiClient.connect(presentationType, msg -> {
+            try {
+                session.sendMessage(new TextMessage(msg));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).subscribe();
     }
 
     @Override
