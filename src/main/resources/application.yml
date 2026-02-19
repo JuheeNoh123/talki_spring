@@ -3,7 +3,6 @@ spring:
     web-application-type: servlet
   application:
     name: talki_spring
-
   data:
     redis:
       host: localhost
@@ -15,11 +14,20 @@ spring:
       max-file-size: 500MB
       max-request-size: 500MB
       file-size-threshold: 10MB
+
 server:
   port: 8080
   address: 0.0.0.0
   tomcat:
     max-swallow-size: -1
     max-http-form-post-size: -1
+
 fastapi:
   url: http://localhost:8000
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: talki-recordings
