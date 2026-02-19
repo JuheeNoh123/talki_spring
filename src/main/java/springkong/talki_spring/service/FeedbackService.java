@@ -3,7 +3,7 @@ package springkong.talki_spring.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import springkong.talki_spring.dto.FeedbackEvent;
+import springkong.talki_spring.dto.FeedbackEventDTO;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class FeedbackService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public List<FeedbackEvent> getFeedbacks(String presentationId) {
+    public List<FeedbackEventDTO> getFeedbacks(String presentationId) {
         String key = "presentation:" + presentationId + ":feedbacks";
 
         List<String> rawList = redisTemplate.opsForList()
@@ -28,7 +28,7 @@ public class FeedbackService {
         return rawList.stream()
                 .map(json -> {
                     try {
-                        return mapper.readValue(json, FeedbackEvent.class);
+                        return mapper.readValue(json, FeedbackEventDTO.class);
                     } catch (Exception e) {
                         return null;
                     }

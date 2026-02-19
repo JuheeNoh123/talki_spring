@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeedbackEvent {
+public class FeedbackEventDTO {
     private double timestamp;
     private String message;
 }
