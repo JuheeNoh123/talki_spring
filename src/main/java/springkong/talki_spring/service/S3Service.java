@@ -21,7 +21,7 @@ import java.util.UUID;
 public class S3Service {
     private final S3Presigner presigner;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${cloud.aws.s3.bucket:}")
     private String bucket;
 
     // 업로드용 URL
