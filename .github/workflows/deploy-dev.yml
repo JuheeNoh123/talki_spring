@@ -97,5 +97,6 @@ jobs:
           script: |
             cd ~/dev
             export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             sh ./config/scripts/deploy.sh
-
+            

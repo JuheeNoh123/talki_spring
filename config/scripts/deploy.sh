@@ -16,6 +16,8 @@ docker pull $IMAGE
 docker run -d \
   --name backend-server \
   --network host \
+  -e SPRING_PROFILES_ACTIVE=dev \
+  -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
   -e REDIS_PASSWORD=$REDIS_PASSWORD \
   --restart unless-stopped \
   $IMAGE
