@@ -1,31 +1,44 @@
 package springkong.talki_spring.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "presentation_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    // 🔥 1:1 관계
+    @OneToOne
+    @JoinColumn(name = "presentation_id")
     private Presentation presentation;
 
-    private Double speechScore;
+    // 🔥 점수는 따로 컬럼 (조회 빠르게 하기 위함)
+    private Integer totalScore;
 
-    private Double postureScore;
+    // 🔥 raw_result 전체 JSON 저장
+    @Column(columnDefinition = "LONGTEXT")
+    private String rawJson;
 
-    private Double gazeScore;
-
-    @Column(columnDefinition = "TEXT")
-    private String detailJson;
+    // 🔥 feedback 전체 JSON 저장
+    @Column(columnDefinition = "LONGTEXT")
+    private String feedbackJson;
 
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

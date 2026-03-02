@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import springkong.talki_spring.domain.Feedback;
+import springkong.talki_spring.domain.Presentation;
+import springkong.talki_spring.dto.AnalyzeResultDTO;
+import springkong.talki_spring.repository.FeedbackRepository;
+import springkong.talki_spring.repository.PresentationRepository;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.util.Map;
@@ -66,8 +72,15 @@ public class AnalyzeService {
 
     private final WebClient fastApiWebClient;
     private final S3Service s3Service;
+    private final PresentationRepository presentationRepository;
+    private final FeedbackRepository feedbackRepository;
 
     public String analyzeFromS3(String key, String presentationType) {
+
+        Presentation presentation =
+                presentationRepository.findByS3Key(key)
+                        .orElseThrow();
+        presentation.setStatus("ANALYZING");
 
         // 1️⃣ presigned GET URL 생성
         String downloadUrl = s3Service.generateDownloadUrl(key);
@@ -88,5 +101,37 @@ public class AnalyzeService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+    }
+
+    public void saveReport(AnalyzeResultDTO.ResultDTO dto){
+        Presentation presentation =
+                presentationRepository.findByS3Key(dto.getS3Key())
+                        .orElseThrow();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String rawJson = mapper.writeValueAsString(dto.getRawResult());
+        String feedbackJson = mapper.writeValueAsString(dto.getFeedback());
+
+        Object scoreObj = dto.getFeedback().get("score");
+
+        Integer score = null;
+
+        if (scoreObj instanceof Integer) {
+            score = (Integer) scoreObj;
+        } else if (scoreObj instanceof Number) {
+            score = ((Number) scoreObj).intValue();
+        }
+
+        Feedback feedback = Feedback.builder()
+                .presentation(presentation)
+                .totalScore(score)
+                .rawJson(rawJson)
+                .feedbackJson(feedbackJson)
+                .build();
+
+        feedbackRepository.save(feedback);
+
+        presentation.setStatus("DONE");
     }
 }

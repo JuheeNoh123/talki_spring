@@ -16,7 +16,11 @@ import java.time.LocalDateTime;
 public class Presentation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String s3Key;
 
 
     private String s3Url;
@@ -28,7 +32,12 @@ public class Presentation {
 
     private String presentationType;
 
-    private String status; // ANALYZING, DONE
+    private String status; // PROCESSING, DONE
 
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

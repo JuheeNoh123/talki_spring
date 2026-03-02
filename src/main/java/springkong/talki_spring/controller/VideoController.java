@@ -3,21 +3,26 @@ package springkong.talki_spring.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springkong.talki_spring.domain.User;
+import springkong.talki_spring.dto.AnalyzeResultDTO;
+import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.service.S3Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/videos")
 public class VideoController {
     private final S3Service s3Service;
-
+    private final UserRepository userRepository;
     // 업로드 URL 발급
     @PostMapping("/upload-url")
-    public ResponseEntity<?> getUploadUrl(@RequestParam String filename) {
+    public ResponseEntity<?> getUploadUrl(@RequestBody AnalyzeResultDTO.UploadUrlDTO dto) {
+
         return ResponseEntity.ok(
-                s3Service.generateUploadUrl(filename)
+                s3Service.generateUploadUrl(dto.getFilename(), dto.getUserId(), dto.getPresentationType())
         );
     }
 
