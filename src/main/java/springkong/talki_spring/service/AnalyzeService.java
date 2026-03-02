@@ -107,7 +107,7 @@ public class AnalyzeService {
     }
 
     @Transactional
-    public void saveReport(AnalyzeResultDTO dto) throws Exception {
+    public void saveReport(AnalyzeResultDTO dto) {
 
         Presentation presentation =
                 presentationRepository.findByS3Key(dto.getS3Key())
@@ -118,6 +118,8 @@ public class AnalyzeService {
         AnalyzeResultDTO.FeedbackDTO feedbackDto = dto.getFeedback();
         AnalyzeResultDTO.ScoreDetail scoreDetail = feedbackDto.getScore_detail();
         AnalyzeResultDTO.Metrics metrics = feedbackDto.getMetrics();
+        AnalyzeResultDTO.RawResultDTO raw = dto.getRawResult();
+
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -144,16 +146,15 @@ public class AnalyzeService {
         // ===== KPI =====
         feedback.setSpeechWpm(metrics.getSpeech_wpm());
         feedback.setGazeFrontRatio(metrics.getGaze_front_ratio());
-        feedback.setPoseWarningRatio(metrics.getPose_warning_ratio());
+        feedback.setPoseWarningRatio(raw.getPose_warning_ratio());
 
         // ===== JSON 저장 =====
         feedback.setLlmFeedbackJson(
                 mapper.writeValueAsString(feedbackDto.getLlm_feedback())
         );
 
-        feedback.setRawDataJson(
-                mapper.writeValueAsString(dto.getRawResult())
-        );
+        String rawJson = mapper.writeValueAsString(raw);
+        feedback.setRawDataJson(rawJson);
 
         feedbackRepository.save(feedback);
 

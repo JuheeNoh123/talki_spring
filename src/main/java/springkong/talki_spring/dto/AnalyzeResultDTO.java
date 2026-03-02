@@ -58,9 +58,26 @@ public class AnalyzeResultDTO {
 
     @Getter
     public static class RawResultDTO {
-        private Map<String, Object> eyes;
-        private Map<String, Object> full;
-        // 전체 raw를 그냥 Map으로 받음
+
+        private Double WPM;
+        private Double handArmMovementAvg;
+        private Double handArmMovementMaxRolling;
+        private Integer pose_warning_count;
+        private Double pose_warning_ratio;
+        private Integer pose_samples;
+
+        private EyesDTO eyes;
+
+        @Getter
+        public static class EyesDTO {
+            private Double avg_dx;
+            private Double avg_dy;
+            private String horiz_mode;
+            private String vert_mode;
+            private Map<String, Integer> horiz_counts;
+            private Map<String, Integer> vert_counts;
+            private Integer samples;
+        }
     }
 }
 
