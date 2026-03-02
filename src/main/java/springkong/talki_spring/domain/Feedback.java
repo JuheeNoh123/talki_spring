@@ -6,39 +6,39 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
-
 @Entity
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔥 1:1 관계
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "presentation_id")
     private Presentation presentation;
 
-    // 🔥 점수는 따로 컬럼 (조회 빠르게 하기 위함)
+    // ===== 핵심 점수 =====
     private Integer totalScore;
 
-    // 🔥 raw_result 전체 JSON 저장
+    private Double gazeScore;
+    private Double speechScore;
+    private Double postureScore;
+
+    // ===== 핵심 지표 =====
+    private Double speechWpm;
+    private Double poseWarningRatio;
+    private Double gazeFrontRatio;
+
+    // ===== JSON 저장 =====
+    @Lob
     @Column(columnDefinition = "LONGTEXT")
-    private String rawJson;
+    private String rawJson;   // raw 전체
 
-    // 🔥 feedback 전체 JSON 저장
+    @Lob
     @Column(columnDefinition = "LONGTEXT")
-    private String feedbackJson;
-
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+    private String llmFeedbackJson; // LLM 피드백 전체
 }
