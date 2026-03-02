@@ -57,7 +57,7 @@ public class dataController {
 //        );
 //    }
 
-    @PostMapping("/analayze/callback")
+    @PostMapping("/analyze/callback")
     public ResponseEntity<?> saveFeedback(@RequestBody AnalyzeResultDTO dto) {
         return ResponseEntity.ok().build();
     }
