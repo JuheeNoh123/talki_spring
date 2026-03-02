@@ -82,7 +82,8 @@ public class AnalyzeService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(Map.of(
                         "video_url", downloadUrl,
-                        "s3_key", key
+                        "s3_key", key,
+                        "presentation_type", presentationType
                 ))
                 .retrieve()
                 .bodyToMono(String.class)
