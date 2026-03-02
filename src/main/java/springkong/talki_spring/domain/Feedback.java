@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,28 +18,37 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "presentation_id")
+    // 🔥 1:1 매핑
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "presentation_id", unique = true)
     private Presentation presentation;
 
-    // ===== 핵심 점수 =====
-    private Integer totalScore;
+    // nullable 허용
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 
+    private LocalDateTime createdAt;
+
+    // ===== 점수 =====
+    private Integer totalScore;
     private Double gazeScore;
     private Double speechScore;
     private Double postureScore;
+    private Double fillerScore;
 
-    // ===== 핵심 지표 =====
+    // ===== 핵심 KPI =====
     private Double speechWpm;
-    private Double poseWarningRatio;
     private Double gazeFrontRatio;
+    private Double poseWarningRatio;
 
-    // ===== JSON 저장 =====
+    // ===== LLM =====
     @Lob
     @Column(columnDefinition = "LONGTEXT")
-    private String rawJson;   // raw 전체
+    private String llmFeedbackJson;
 
+    // ===== RAW 전체 데이터 =====
     @Lob
     @Column(columnDefinition = "LONGTEXT")
-    private String llmFeedbackJson; // LLM 피드백 전체
+    private String rawDataJson;
 }

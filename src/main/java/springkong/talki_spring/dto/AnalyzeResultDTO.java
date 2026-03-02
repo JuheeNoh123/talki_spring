@@ -46,6 +46,7 @@ public class AnalyzeResultDTO {
         private Double gaze;
         private Double speech_speed;
         private Double pose;
+        private Double fillers;
     }
 
     @Getter

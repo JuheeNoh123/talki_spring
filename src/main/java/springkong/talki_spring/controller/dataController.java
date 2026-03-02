@@ -58,7 +58,7 @@ public class dataController {
 //    }
 
     @PostMapping("/analyze/callback")
-    public ResponseEntity<?> saveFeedback(@RequestBody AnalyzeResultDTO dto) {
+    public ResponseEntity<?> saveFeedback(@RequestBody AnalyzeResultDTO dto) throws Exception {
         System.out.println(dto);
         System.out.println("🔥 CALLBACK 도착");
         analyzeService.saveReport(dto);

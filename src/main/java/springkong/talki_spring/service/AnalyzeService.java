@@ -5,17 +5,20 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import springkong.talki_spring.domain.Feedback;
 import springkong.talki_spring.domain.Presentation;
+import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.AnalyzeResultDTO;
 import springkong.talki_spring.repository.FeedbackRepository;
 import springkong.talki_spring.repository.PresentationRepository;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 //@Service
@@ -103,50 +106,54 @@ public class AnalyzeService {
                 .block();
     }
 
-    public void saveReport(AnalyzeResultDTO dto){
+    @Transactional
+    public void saveReport(AnalyzeResultDTO dto) throws Exception {
+
         Presentation presentation =
                 presentationRepository.findByS3Key(dto.getS3Key())
                         .orElseThrow();
+
+        User user = presentation.getUser();
 
         AnalyzeResultDTO.FeedbackDTO feedbackDto = dto.getFeedback();
         AnalyzeResultDTO.ScoreDetail scoreDetail = feedbackDto.getScore_detail();
         AnalyzeResultDTO.Metrics metrics = feedbackDto.getMetrics();
 
-
         ObjectMapper mapper = new ObjectMapper();
 
-//        String rawJson = mapper.writeValueAsString(dto.getRawResult());
-//        String feedbackJson = mapper.writeValueAsString(dto.getFeedback());
-//
-//        Object scoreObj = dto.getFeedback().get("score");
-//
-//        Integer score = null;
-//
-//        if (scoreObj instanceof Integer) {
-//            score = (Integer) scoreObj;
-//        } else if (scoreObj instanceof Number) {
-//            score = ((Number) scoreObj).intValue();
-//        }
+        // 🔥 기존 feedback 있는지 확인 (1:1)
+        Feedback feedback = feedbackRepository
+                .findByPresentation(presentation)
+                .orElse(null);
 
-        Feedback feedback = Feedback.builder()
-                .presentation(presentation)
+        if (feedback == null) {
+            feedback = Feedback.builder()
+                    .presentation(presentation)
+                    .user(user)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+        }
 
-                // ===== 핵심 점수 =====
-                .totalScore(feedbackDto.getScore())
-                .gazeScore(scoreDetail.getGaze())
-                .speechScore(scoreDetail.getSpeech_speed())
-                .postureScore(scoreDetail.getPose())
+        // ===== 점수 =====
+        feedback.setTotalScore(feedbackDto.getScore());
+        feedback.setGazeScore(scoreDetail.getGaze());
+        feedback.setSpeechScore(scoreDetail.getSpeech_speed());
+        feedback.setPostureScore(scoreDetail.getPose());
+        feedback.setFillerScore(scoreDetail.getFillers());
 
-                // ===== 핵심 지표 =====
-                .speechWpm(metrics.getSpeech_wpm())
-                .poseWarningRatio(metrics.getPose_warning_ratio())
-                .gazeFrontRatio(metrics.getGaze_front_ratio())
+        // ===== KPI =====
+        feedback.setSpeechWpm(metrics.getSpeech_wpm());
+        feedback.setGazeFrontRatio(metrics.getGaze_front_ratio());
+        feedback.setPoseWarningRatio(metrics.getPose_warning_ratio());
 
-                // ===== JSON =====
-                .rawJson(mapper.writeValueAsString(dto.getRawResult()))
-                .llmFeedbackJson(mapper.writeValueAsString(feedbackDto.getLlm_feedback()))
+        // ===== JSON 저장 =====
+        feedback.setLlmFeedbackJson(
+                mapper.writeValueAsString(feedbackDto.getLlm_feedback())
+        );
 
-                .build();
+        feedback.setRawDataJson(
+                mapper.writeValueAsString(dto.getRawResult())
+        );
 
         feedbackRepository.save(feedback);
 
