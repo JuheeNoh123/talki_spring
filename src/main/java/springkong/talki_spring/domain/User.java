@@ -20,6 +20,8 @@ public class User {
     @Column(unique = true)
     private String userId;
     private String password;
+    private String email;
+    private String userName;
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
