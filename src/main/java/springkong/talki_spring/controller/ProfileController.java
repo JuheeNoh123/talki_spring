@@ -19,12 +19,7 @@ public class ProfileController {
     private final S3Service s3Service;
     private final AuthService authService;
 
-    @PostMapping("/upload-url")
-    public ResponseEntity<?> getProfileUploadUrl(@RequestBody UserRequestDTO.ProfileImageRequest request) {
-        return ResponseEntity.ok(
-                s3Service.generateProfileUploadUrl(request.getFilename())
-        );
-    }
+
 
     @PostMapping("/image")
     public ResponseEntity<?> updateProfileImage(

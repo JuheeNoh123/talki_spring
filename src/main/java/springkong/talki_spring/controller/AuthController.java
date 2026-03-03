@@ -10,6 +10,7 @@ import springkong.talki_spring.dto.response.UserResponseDTO;
 import springkong.talki_spring.security.CustomUserDetails;
 import springkong.talki_spring.security.JwtProvider;
 import springkong.talki_spring.service.AuthService;
+import springkong.talki_spring.service.S3Service;
 
 @RestController
 @RequestMapping("/auth")
@@ -18,12 +19,19 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+    private final S3Service s3Service;
 
     @PostMapping("/signup")
     public String signup(@RequestBody UserRequestDTO.SignupRequest request) {
         return authService.signup(request);
     }
 
+    @PostMapping("/profile/upload-url")
+    public ResponseEntity<?> getProfileUploadUrl(@RequestBody UserRequestDTO.ProfileImageRequest request) {
+        return ResponseEntity.ok(
+                s3Service.generateProfileUploadUrl(request.getFilename())
+        );
+    }
 
 
     @PostMapping("/login")
