@@ -1,5 +1,6 @@
 package springkong.talki_spring.service;
 
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,10 +8,12 @@ import org.springframework.stereotype.Service;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.UserRequestDTO;
 import springkong.talki_spring.dto.response.UserResponseDTO;
+import springkong.talki_spring.exception.DuplicateUserException;
 import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.security.JwtProvider;
 import springkong.talki_spring.exception.UserNotFoundException;
 import java.util.concurrent.TimeUnit;
+
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,24 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RedisTemplate<String, String> redisTemplate;
+
+    public String signup(UserRequestDTO.SignupRequest request) {
+
+        if (userRepository.existsByUserId(request.getUserId())) {
+            throw new DuplicateUserException();
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        User user = User.builder()
+                .userId(request.getUserId())
+                .password(encodedPassword)
+                .build();
+
+        userRepository.save(user);
+
+        return "회원가입이 완료되었습니다.";
+    }
 
     public UserResponseDTO.LoginResponse login(UserRequestDTO.LoginRequest request) {
 

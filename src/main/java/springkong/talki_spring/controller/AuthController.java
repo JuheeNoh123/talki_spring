@@ -2,6 +2,7 @@ package springkong.talki_spring.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springkong.talki_spring.dto.request.UserRequestDTO;
 import springkong.talki_spring.dto.response.UserResponseDTO;
@@ -15,6 +16,11 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
+
+    @PostMapping("/signup")
+    public String signup(@RequestBody UserRequestDTO.SignupRequest request) {
+        return authService.signup(request);
+    }
 
     @PostMapping("/login")
     public UserResponseDTO.LoginResponse login(@RequestBody UserRequestDTO.LoginRequest request) {

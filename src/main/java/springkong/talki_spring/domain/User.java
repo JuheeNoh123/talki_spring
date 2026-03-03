@@ -2,11 +2,12 @@ package springkong.talki_spring.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
