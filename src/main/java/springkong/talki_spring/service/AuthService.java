@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.UserRequestDTO;
 import springkong.talki_spring.dto.response.UserResponseDTO;
+import springkong.talki_spring.enums.UserType;
 import springkong.talki_spring.exception.DuplicateUserException;
 import springkong.talki_spring.exception.InvalidPasswordException;
 import springkong.talki_spring.repository.UserRepository;
@@ -38,6 +39,7 @@ public class AuthService {
                 .userName(request.getName())
                 .password(encodedPassword)
                 .email(request.getEmail())
+                .userType(UserType.BASIC)
                 .profileImageKey(
                         request.getProfileImageKey() == null
                                 ? "profiles/default.png"

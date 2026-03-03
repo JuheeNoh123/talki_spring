@@ -48,14 +48,6 @@ public class dataController {
                 analyzeService.analyzeFromS3(key, presentationType)
         );
     }
-//    @PostMapping(value = "/analyze/record", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<?> analyzeRecord(
-//            @RequestPart("file") MultipartFile file,
-//            @RequestParam(defaultValue = "online_small") String presentationType) {
-//        return ResponseEntity.ok(
-//                analyzeService.forwardToFastApi(file, presentationType)
-//        );
-//    }
 
     @PostMapping("/analyze/callback")
     public ResponseEntity<?> saveFeedback(@RequestBody AnalyzeResultDTO dto) throws Exception {

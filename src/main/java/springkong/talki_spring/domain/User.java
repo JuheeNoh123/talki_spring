@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import springkong.talki_spring.enums.UserType;
 
 @Builder
 @Entity
@@ -22,6 +23,7 @@ public class User {
     private String email;
     private String userName;
     private String profileImageKey;
+    private UserType userType;
 
     public void updateProfile(String userName, String email) {
         if (userName != null) this.userName = userName;
