@@ -96,7 +96,6 @@ public class S3Service {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
-                .contentType("image/jpeg") // 프론트에서 타입 맞춰도 됨
                 .build();
 
         PutObjectPresignRequest presignRequest =
