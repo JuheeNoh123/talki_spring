@@ -2,6 +2,7 @@ package springkong.talki_spring.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Table(name = "users")
 public class User {
     @Id

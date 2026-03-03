@@ -16,7 +16,8 @@ spring:
       max-file-size: 500MB
       max-request-size: 500MB
       file-size-threshold: 10MB
-
+jwt:
+  base64Secret: dGhpc2lzMzJiYXl0ZXNlY3JldGtleWZvcnRlc3Rpbmc=
 #  datasource:
 #    url: jdbc:h2:mem:testdb
 #    driver-class-name: org.h2.Driver
