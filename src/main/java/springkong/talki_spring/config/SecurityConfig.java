@@ -36,7 +36,7 @@ public class SecurityConfig {
 //                        ).permitAll()   // 👈 인증 제외
 //                        .anyRequest().permitAll()
 
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**","/profile/upload-url").permitAll()
                         .anyRequest().authenticated()
                     )
                     .addFilterBefore(jwtAuthenticationFilter,
