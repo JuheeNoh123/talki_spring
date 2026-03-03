@@ -23,6 +23,7 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
+
     public String signup(UserRequestDTO.SignupRequest request) {
 
         if (userRepository.existsByUserId(request.getUserId())) {
@@ -33,7 +34,14 @@ public class AuthService {
 
         User user = User.builder()
                 .userId(request.getUserId())
+                .userName(request.getName())
                 .password(encodedPassword)
+                .email(request.getEmail())
+                .profileImageKey(
+                        request.getProfileImageKey() == null
+                                ? "profiles/default.png"
+                                : request.getProfileImageKey()
+                )
                 .build();
 
         userRepository.save(user);
@@ -67,20 +75,20 @@ public class AuthService {
 
         jwtProvider.validate(refreshToken);
 
-        String username = jwtProvider.getUsername(refreshToken);
+        String userId = jwtProvider.getUserId(refreshToken);
 
         String stored = redisTemplate.opsForValue()
-                .get("RT:" + username);
+                .get("RT:" + userId);
 
         if (stored == null || !stored.equals(refreshToken)) {
             throw new RuntimeException("Refresh mismatch");
         }
 
-        String newAccess = jwtProvider.createAccessToken(username);
-        String newRefresh = jwtProvider.createRefreshToken(username);
+        String newAccess = jwtProvider.createAccessToken(userId);
+        String newRefresh = jwtProvider.createRefreshToken(userId);
 
         redisTemplate.opsForValue()
-                .set("RT:" + username,
+                .set("RT:" + userId,
                         newRefresh,
                         7,
                         TimeUnit.DAYS);
@@ -88,7 +96,41 @@ public class AuthService {
         return new UserResponseDTO.TokenResponse(newAccess, newRefresh);
     }
 
-    public void logout(String username) {
-        redisTemplate.delete("RT:" + username);
+    public void logout(String userId) {
+        redisTemplate.delete("RT:" + userId);
+    }
+
+
+    public void updateProfileImage(User user, String key) {
+
+        user.updateProfileImage(key);
+        userRepository.save(user);
+    }
+
+    public void updateProfile(
+            User user,
+            String userName,
+            String email
+    ) {
+
+        user.updateProfile(userName, email);
+
+        userRepository.save(user);
+    }
+
+    public void changePassword(
+            User user,
+            String oldPassword,
+            String newPassword
+    ) {
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("현재 비밀번호 불일치");
+        }
+
+        String encoded = passwordEncoder.encode(newPassword);
+        user.changePassword(encoded);
+
+        userRepository.save(user);
     }
 }

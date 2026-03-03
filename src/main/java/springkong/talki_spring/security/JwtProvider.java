@@ -24,19 +24,19 @@ public class JwtProvider {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(String username) {
-        return createToken(username, ACCESS_EXP);
+    public String createAccessToken(String userId) {
+        return createToken(userId, ACCESS_EXP);
     }
 
     public String createRefreshToken(String username) {
         return createToken(username, REFRESH_EXP);
     }
 
-    private String createToken(String username, long expTime) {
+    private String createToken(String userId, long expTime) {
         Instant now = Instant.now();
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userId)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plusMillis(expTime)))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -51,7 +51,7 @@ public class JwtProvider {
         return true;
     }
 
-    public String getUsername(String token) {
+    public String getUserId(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()

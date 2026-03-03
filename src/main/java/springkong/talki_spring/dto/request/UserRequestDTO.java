@@ -13,8 +13,11 @@ public class UserRequestDTO {
         private String userId;
         @NotBlank(message = "비밀번호는 필수입니다.")
         private String password;
-//        @NotBlank(message = "이름은 필수입니다.")
-//        private String name;
+        @NotBlank(message = "이름은 필수입니다.")
+        private String name;
+        @NotBlank(message = "이름은 필수입니다.")
+        private String email;
+        private String profileImageKey; // 추가
     }
 
     @Data
@@ -30,5 +33,27 @@ public class UserRequestDTO {
     @NoArgsConstructor
     public static class TokenRequest {
         private String refreshToken;
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class ProfileImageRequest {
+        private String filename;
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class UpdateProfileImageRequest {
+        private String key;
+    }
+
+    @Getter
+    public static class UpdateProfileRequest {
+        private String userName;
+        private String email;
+    }
+
+    @Getter
+    public static class ChangePasswordRequest {
+        private String oldPassword;
+        private String newPassword;
     }
 }

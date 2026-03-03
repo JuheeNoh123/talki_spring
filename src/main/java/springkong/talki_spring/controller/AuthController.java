@@ -3,9 +3,11 @@ package springkong.talki_spring.controller;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springkong.talki_spring.dto.request.UserRequestDTO;
 import springkong.talki_spring.dto.response.UserResponseDTO;
+import springkong.talki_spring.security.CustomUserDetails;
 import springkong.talki_spring.security.JwtProvider;
 import springkong.talki_spring.service.AuthService;
 
@@ -22,6 +24,8 @@ public class AuthController {
         return authService.signup(request);
     }
 
+
+
     @PostMapping("/login")
     public UserResponseDTO.LoginResponse login(@RequestBody UserRequestDTO.LoginRequest request) {
         return authService.login(request);
@@ -36,8 +40,37 @@ public class AuthController {
     public void logout(@RequestHeader("Authorization") String header) {
 
         String token = header.substring(7);
-        String username = jwtProvider.getUsername(token);
-        authService.logout(username);
+        String userId = jwtProvider.getUserId(token);
+        authService.logout(userId);
     }
 
+
+    @PatchMapping("/profile/update")
+    public ResponseEntity<?> updateProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+
+        authService.updateProfile(
+                userDetails.getUser(),
+                userDetails.getUserName(),
+                userDetails.getEmail()
+        );
+
+        return ResponseEntity.ok("프로필 수정 완료");
+    }
+
+    @PatchMapping("/profile/update/password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserRequestDTO.ChangePasswordRequest request
+    ) {
+
+        authService.changePassword(
+                userDetails.getUser(),
+                request.getOldPassword(),
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.ok("비밀번호 변경 완료");
+    }
 }

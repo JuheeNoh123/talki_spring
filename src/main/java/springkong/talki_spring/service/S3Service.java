@@ -88,4 +88,31 @@ public class S3Service {
 
         return presignedRequest.url().toString();
     }
+
+    public Map<String, String> generateProfileUploadUrl(String filename) {
+
+        String key = "profiles/" + UUID.randomUUID() + "-" + filename;
+
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType("image/jpeg") // 프론트에서 타입 맞춰도 됨
+                .build();
+
+        PutObjectPresignRequest presignRequest =
+                PutObjectPresignRequest.builder()
+                        .signatureDuration(Duration.ofMinutes(5))
+                        .putObjectRequest(objectRequest)
+                        .build();
+
+        PresignedPutObjectRequest presignedRequest =
+                presigner.presignPutObject(presignRequest);
+
+        return Map.of(
+                "uploadUrl", presignedRequest.url().toString(),
+                "key", key
+        );
+    }
+
+
 }

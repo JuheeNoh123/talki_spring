@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Builder
 @Entity
 @NoArgsConstructor
@@ -22,14 +21,20 @@ public class User {
     private String password;
     private String email;
     private String userName;
+    private String profileImageKey;
 
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public void setPassword(String password) {
-        this.password = passwordEncoder.encode(password);
+    public void updateProfile(String userName, String email) {
+        if (userName != null) this.userName = userName;
+        if (email != null) this.email = email;
     }
 
-    public boolean checkPassword(String rawpassword) {
-        return passwordEncoder.matches(rawpassword, this.password);
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
+
+    // setter 대신 메서드로 수정 권장
+    public void updateProfileImage(String key) {
+        this.profileImageKey = key;
+    }
+
 }
