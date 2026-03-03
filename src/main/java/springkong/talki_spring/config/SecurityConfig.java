@@ -42,6 +42,11 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults()) // spring boot의 기본 CORS설정 사용
                 .csrf(csrf -> csrf.disable())
+
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // 누구나 접근 가능한 API 경로
                         .requestMatchers("/ws/**").permitAll() // WebSocket 핸드쉐이크 허용
