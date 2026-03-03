@@ -29,12 +29,12 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        String access = jwtProvider.createAccessToken(user.getUsername());
-        String refresh = jwtProvider.createRefreshToken(user.getUsername());
+        String access = jwtProvider.createAccessToken(user.getUserId());
+        String refresh = jwtProvider.createRefreshToken(user.getUserId());
 
         // Refresh Redis 저장
         redisTemplate.opsForValue()
-                .set("RT:" + user.getUsername(),
+                .set("RT:" + user.getUserId(),
                         refresh,
                         7,
                         TimeUnit.DAYS);
