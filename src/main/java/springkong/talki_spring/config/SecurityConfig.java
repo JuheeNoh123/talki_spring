@@ -57,6 +57,12 @@ public class SecurityConfig {
                         .requestMatchers("/ws/**").permitAll() // WebSocket 핸드쉐이크 허용
                         .requestMatchers("/analyze/**").permitAll()
                         .requestMatchers("/videos/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청은 누구나 접근가능
                         .anyRequest().authenticated()
                     )
@@ -67,12 +73,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers(
-                "/swagger-ui/**",
-                "/v3/api-docs/**",
-                "/swagger-ui.html"
-        );
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return web -> web.ignoring().requestMatchers(
+//                "/swagger-ui/**",
+//                "/v3/api-docs/**",
+//                "/swagger-ui.html"
+//        );
+//    }
 }
