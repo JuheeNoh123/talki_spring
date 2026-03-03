@@ -1,15 +1,21 @@
 package springkong.talki_spring.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import springkong.talki_spring.security.JwtAuthenticationFilter;
+
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableWebSecurity
@@ -21,22 +27,28 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint(){
+        return (request, response, authException) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getOutputStream().write("{\"code\":\"UNAUTHORIZED\",\"message\":\"인증이 필요합니다.\"}"
+                    .getBytes(StandardCharsets.UTF_8));
+        };
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults()) // spring boot의 기본 CORS설정 사용
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/test/**",
-//                                "/analyze/**",
-//                                "/presentation/**",
-//                                "/realtime/**"
-//                        ).permitAll()   // 👈 인증 제외
-//                        .anyRequest().permitAll()
-
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll() // 누구나 접근 가능한 API 경로
+                        .requestMatchers("/ws/**").permitAll() // WebSocket 핸드쉐이크 허용
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() //Swagger 문서관련 누구나 접근가능
+                        .requestMatchers("/analyze/**").permitAll()
+                        .requestMatchers("/videos/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청은 누구나 접근가능
                         .anyRequest().authenticated()
                     )
                     .addFilterBefore(jwtAuthenticationFilter,

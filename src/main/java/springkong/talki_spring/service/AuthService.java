@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.UserRequestDTO;
 import springkong.talki_spring.dto.response.UserResponseDTO;
+import springkong.talki_spring.enums.UserType;
 import springkong.talki_spring.exception.DuplicateUserException;
+import springkong.talki_spring.exception.InvalidPasswordException;
 import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.security.JwtProvider;
 import springkong.talki_spring.exception.UserNotFoundException;
@@ -37,6 +39,7 @@ public class AuthService {
                 .userName(request.getName())
                 .password(encodedPassword)
                 .email(request.getEmail())
+                .userType(UserType.BASIC)
                 .profileImageKey(
                         request.getProfileImageKey() == null
                                 ? "profiles/default.png"
@@ -55,7 +58,7 @@ public class AuthService {
                 .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidPasswordException("비밀번호가 틀렸습니다.");
         }
 
         String access = jwtProvider.createAccessToken(user.getUserId());
