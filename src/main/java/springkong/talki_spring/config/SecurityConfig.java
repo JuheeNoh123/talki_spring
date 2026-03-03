@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import springkong.talki_spring.security.JwtAuthenticationFilter;
+
 
 import java.nio.charset.StandardCharsets;
 
@@ -40,7 +42,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(0)
+    //@Order(0)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults()) // spring boot의 기본 CORS설정 사용
@@ -53,10 +55,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // 누구나 접근 가능한 API 경로
                         .requestMatchers("/ws/**").permitAll() // WebSocket 핸드쉐이크 허용
-                        .requestMatchers("/v3/**", "/swagger-ui/**", "/swagger-ui.html",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs",
-                                "/v3/**").permitAll() //Swagger 문서관련 누구나 접근가능
                         .requestMatchers("/analyze/**").permitAll()
                         .requestMatchers("/videos/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight 요청은 누구나 접근가능
@@ -67,5 +65,14 @@ public class SecurityConfig {
 
 
         return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html"
+        );
     }
 }
