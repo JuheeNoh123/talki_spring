@@ -1,5 +1,6 @@
 package springkong.talki_spring.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -15,8 +16,8 @@ import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.AnalyzeResultDTO;
 import springkong.talki_spring.repository.FeedbackRepository;
 import springkong.talki_spring.repository.PresentationRepository;
-import tools.jackson.databind.ObjectMapper;
-
+//import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -107,7 +108,7 @@ public class AnalyzeService {
     }
 
     @Transactional
-    public void saveReport(AnalyzeResultDTO dto) {
+    public void saveReport(AnalyzeResultDTO dto) throws JsonProcessingException {
 
         Presentation presentation =
                 presentationRepository.findByS3Key(dto.getS3Key())
