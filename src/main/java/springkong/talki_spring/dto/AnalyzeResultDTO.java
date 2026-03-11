@@ -58,7 +58,7 @@ public class AnalyzeResultDTO {
 
     @Getter
     public static class RawResultDTO {
-
+        @JsonProperty("wpm")
         private Double WPM;
         private Double handArmMovementAvg;
         private Double handArmMovementMaxRolling;
