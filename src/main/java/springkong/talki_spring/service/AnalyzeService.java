@@ -79,6 +79,7 @@ public class AnalyzeService {
     private final PresentationRepository presentationRepository;
     private final FeedbackRepository feedbackRepository;
 
+    @Transactional
     public String analyzeFromS3(String key, String presentationType) {
 
         Presentation presentation =
