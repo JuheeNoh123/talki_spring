@@ -19,10 +19,10 @@ public class Presentation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "s3_key")
     private String s3Key;
 
-
+    @Column(name = "s3_Url")
     private String s3Url;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
