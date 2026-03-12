@@ -15,8 +15,8 @@ public class RealTimeFeedback {
     private Long id;
 
     // 🔥 1:1 매핑
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "presentation_id", unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "presentation_id")
     private Presentation presentation;
 
 
