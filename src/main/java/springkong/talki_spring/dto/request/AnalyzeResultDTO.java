@@ -16,6 +16,7 @@ public class AnalyzeResultDTO {
 
     @Data
     public static class UploadUrlDTO {
+        private String presentationId;
         private String filename;
         private Long userId;
         private String presentationType;

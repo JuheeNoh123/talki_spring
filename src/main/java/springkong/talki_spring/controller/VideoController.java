@@ -24,7 +24,7 @@ public class VideoController {
     public ResponseEntity<?> getUploadUrl(@RequestBody AnalyzeResultDTO.UploadUrlDTO dto) {
 
         return ResponseEntity.ok(
-                s3Service.generateUploadUrl(dto.getFilename(), dto.getUserId(), dto.getPresentationType())
+                s3Service.generateUploadUrl(dto.getPresentationId(), dto.getFilename(), dto.getUserId(), dto.getPresentationType())
         );
     }
 
