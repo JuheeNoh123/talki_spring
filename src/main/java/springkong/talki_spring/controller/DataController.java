@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import springkong.talki_spring.dto.request.AnalyzeResultDTO;
 import springkong.talki_spring.dto.request.FeedbackEventDTO;
+import springkong.talki_spring.security.CustomUserDetails;
 import springkong.talki_spring.service.AnalyzeService;
 import springkong.talki_spring.service.FeedbackService;
 
@@ -39,15 +41,15 @@ public class DataController {
     }
 
     //발표 피드백 조회
-    @Operation(summary = "실시간 발표 피드백 조회",
-            description = "presentationId는 WebSocket 연결 시 전달받은 session_start 메시지의 presentationId 값을 사용해야 합니다.")
-    @GetMapping("/presentation/{presentationId}/feedbacks")
-    public List<FeedbackEventDTO> getFeedbacks(
-            @Parameter(description = "WebSocket 연결 시 받은 presentationId 사용")
-            @PathVariable String presentationId
-    ) {
-        return feedbackService.getFeedbacks(presentationId);
-    }
+//    @Operation(summary = "실시간 발표 피드백 조회",
+//            description = "presentationId는 WebSocket 연결 시 전달받은 session_start 메시지의 presentationId 값을 사용해야 합니다.")
+//    @GetMapping("/presentation/{presentationId}/feedbacks")
+//    public ResponseEntity<List<FeedbackEventDTO>> getFeedbacks(
+//            @Parameter(description = "WebSocket 연결 시 받은 presentationId 사용")
+//            @PathVariable String presentationId
+//    ) {
+//        return ResponseEntity.ok(feedbackService.getRealTimeFeedbacks(presentationId));
+//    }
 
     //녹화 영상 보내기
     @Operation(summary = "S3 영상 분석 시작",
@@ -77,9 +79,13 @@ public class DataController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "영상 결과 조회")
     @GetMapping("/analyze/getResult")
-    public ResponseEntity<AnalyzeResultDTO> getResult() {
-        return null;
+    public ResponseEntity<?> getResult(@AuthenticationPrincipal CustomUserDetails user, String presentationId) {
+        Long userId = (user != null) ? user.getUserId() : null;
+        return ResponseEntity.ok(
+                feedbackService.getFeedbacks(userId, presentationId)
+        );
     }
 
 }

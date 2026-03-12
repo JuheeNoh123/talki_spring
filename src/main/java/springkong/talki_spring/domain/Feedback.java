@@ -21,6 +21,7 @@ public class Feedback {
     // 🔥 1:1 매핑
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "presentation_id", unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Presentation presentation;
 
     // nullable 허용

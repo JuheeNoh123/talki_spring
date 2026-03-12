@@ -50,8 +50,9 @@ public class S3Service {
         PresignedPutObjectRequest presignedRequest =
                 presigner.presignPutObject(presignRequest);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElse(null);
+
+
 
         Presentation presentation = Presentation.builder()
                 .id(presentationId)

@@ -13,7 +13,7 @@ import springkong.talki_spring.exception.DuplicateUserException;
 import springkong.talki_spring.exception.InvalidPasswordException;
 import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.security.JwtProvider;
-import springkong.talki_spring.exception.UserNotFoundException;
+import springkong.talki_spring.exception.NotFoundException;
 import java.util.concurrent.TimeUnit;
 
 
@@ -55,7 +55,7 @@ public class AuthService {
     public UserResponseDTO.LoginResponse login(UserRequestDTO.LoginRequest request) {
 
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("사용자"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidPasswordException("비밀번호가 틀렸습니다.");

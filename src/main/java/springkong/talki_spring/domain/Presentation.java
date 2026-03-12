@@ -26,8 +26,8 @@ public class Presentation {
     @Column(name = "s3_Url")
     private String s3Url;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
