@@ -3,6 +3,7 @@ package springkong.talki_spring.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import springkong.talki_spring.domain.Feedback;
 import springkong.talki_spring.domain.Presentation;
 import springkong.talki_spring.domain.RealTimeFeedback;
@@ -54,6 +55,7 @@ public class FeedbackService {
                 .toList();
     }
 
+    @Transactional
     public FeedbackResponseDTO.BasicFeedbackDTO getFeedbacks(Long userId, String presentationId){
         User user = null;
         Presentation presentation = presentationRepository.findById(presentationId).orElseThrow(()->new NotFoundException("PresentationId"));
