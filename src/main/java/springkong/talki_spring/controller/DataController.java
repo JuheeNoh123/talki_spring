@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-import springkong.talki_spring.dto.AnalyzeResultDTO;
+import springkong.talki_spring.dto.request.AnalyzeResultDTO;
 import springkong.talki_spring.dto.FeedbackEventDTO;
 import springkong.talki_spring.service.AnalyzeService;
 import springkong.talki_spring.service.FeedbackService;
@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Analyze", description = "발표 분석 API")
-public class dataController {
+public class DataController {
     private final FeedbackService feedbackService;
     private final AnalyzeService analyzeService;
     private final WebClient fastApiWebClient;
@@ -36,7 +36,7 @@ public class dataController {
     }
 
     //발표 피드백 조회
-    @Operation(summary = "발표 피드백 조회")
+    @Operation(summary = "실시간 발표 피드백 조회")
     @GetMapping("/presentation/{presentationId}/feedbacks")
     public List<FeedbackEventDTO> getFeedbacks(
             @PathVariable String presentationId
@@ -64,5 +64,8 @@ public class dataController {
         analyzeService.saveReport(dto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/analyze/getResult")
+    public ResponseEntity<AnalyzeResultDTO> getResult() {return null;}
 
 }

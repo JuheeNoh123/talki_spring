@@ -5,13 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springkong.talki_spring.domain.User;
-import springkong.talki_spring.dto.AnalyzeResultDTO;
+import springkong.talki_spring.dto.request.AnalyzeResultDTO;
 import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.service.S3Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor

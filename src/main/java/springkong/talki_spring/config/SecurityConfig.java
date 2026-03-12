@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // 누구나 접근 가능한 API 경로
                         .requestMatchers("/ws/**").permitAll() // WebSocket 핸드쉐이크 허용
+                        .requestMatchers("/realtime/**").permitAll()
                         .requestMatchers("/analyze/**").permitAll()
                         .requestMatchers("/videos/**").permitAll()
                         .requestMatchers(
