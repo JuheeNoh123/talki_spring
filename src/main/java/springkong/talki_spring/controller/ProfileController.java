@@ -1,5 +1,7 @@
 package springkong.talki_spring.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,13 +16,14 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/profile")
+@Tag(name = "Profile", description = "프로필 관리 API")
 public class ProfileController {
 
     private final S3Service s3Service;
     private final AuthService authService;
 
 
-
+    @Operation(summary = "프로필 이미지 변경")
     @PostMapping("/image")
     public ResponseEntity<?> updateProfileImage(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -30,6 +33,7 @@ public class ProfileController {
         return ResponseEntity.ok("프로필 이미지 업데이트 완료");
     }
 
+    @Operation(summary = "프로필 이미지 다운로드 URL 조회")
     @GetMapping("/image-url")
     public ResponseEntity<?> getProfileImageUrl(@RequestParam String key) {
         return ResponseEntity.ok(

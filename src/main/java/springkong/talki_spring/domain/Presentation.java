@@ -16,13 +16,14 @@ import java.time.LocalDateTime;
 public class Presentation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
+    private String id;
+
+    @Column(nullable = false, name = "s3_key")
     private String s3Key;
 
-
+    @Column(name = "s3_Url")
     private String s3Url;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

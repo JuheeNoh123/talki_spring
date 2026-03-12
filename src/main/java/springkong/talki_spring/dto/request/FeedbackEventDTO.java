@@ -1,4 +1,4 @@
-package springkong.talki_spring.dto;
+package springkong.talki_spring.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackEventDTO {
-    private double timestamp;
-    private String message;
+    private String type;
+    private double start;
+    private double end;
+    private double duration;
 }

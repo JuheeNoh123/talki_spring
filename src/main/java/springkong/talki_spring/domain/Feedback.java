@@ -31,16 +31,17 @@ public class Feedback {
     private LocalDateTime createdAt;
 
     // ===== 점수 =====
-    private Integer totalScore;
-    private Double gazeScore;
-    private Double speechScore;
-    private Double postureScore;
-    private Double fillerScore;
+    private Integer totalScore; //총점수
+    private Double gazeScore; //시선 점수
+    private Double speechScore; //발화 점수
+    private Double postureScore; //제스쳐 점수
+    private Double fillerScore; //필러 점수
+    private Double topicScore; //주제 적합성
 
     // ===== 핵심 KPI =====
-    private Double speechWpm;
-    private Double gazeFrontRatio;
-    private Double poseWarningRatio;
+    private Double speechWpm; //발화속도
+    private Double gazeFrontRatio; //중앙 시선 비율
+    private Double poseWarningRatio; //자세 경고 비율
 
     // ===== LLM =====
     @Lob

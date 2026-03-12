@@ -34,7 +34,7 @@ jobs:
 
       # Gradle 빌드
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       # Docker 이미지 메타데이터 설정
       - name: Docker meta

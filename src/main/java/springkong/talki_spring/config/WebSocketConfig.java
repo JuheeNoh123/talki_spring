@@ -25,15 +25,15 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 
     }
-//    @Bean //json 크기 설정
-//    public ServletServerContainerFactoryBean createWebSocketContainer() {
-//        ServletServerContainerFactoryBean container =
-//                new ServletServerContainerFactoryBean();
-//
-//        container.setMaxTextMessageBufferSize(10 * 1024 * 1024); // 10MB
-//        container.setMaxBinaryMessageBufferSize(10 * 1024 * 1024);
-//        container.setAsyncSendTimeout(20_000L);
-//
-//        return container;
-//    }
+    @Bean //json 크기 설정
+    public ServletServerContainerFactoryBean createWebSocketContainer() {
+        ServletServerContainerFactoryBean container =
+                new ServletServerContainerFactoryBean();
+
+        container.setMaxTextMessageBufferSize(10 * 1024 * 1024); // 10MB
+        container.setMaxBinaryMessageBufferSize(10 * 1024 * 1024);
+        container.setAsyncSendTimeout(20_000L);
+
+        return container;
+    }
 }
