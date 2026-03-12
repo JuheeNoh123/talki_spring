@@ -50,8 +50,11 @@ public class S3Service {
         PresignedPutObjectRequest presignedRequest =
                 presigner.presignPutObject(presignRequest);
 
-        User user = userRepository.findById(userId).orElse(null);
+        User user = null;
 
+        if (userId!=null) {
+            user = userRepository.findById(userId).orElse(null);
+        }
 
 
         Presentation presentation = Presentation.builder()

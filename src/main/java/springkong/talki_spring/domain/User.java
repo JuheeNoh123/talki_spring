@@ -23,6 +23,8 @@ public class User {
     private String email;
     private String userName;
     private String profileImageKey;
+    @Column(name = "user_type")
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 
     public void updateProfile(String userName, String email) {
