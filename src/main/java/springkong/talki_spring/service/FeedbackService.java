@@ -16,7 +16,7 @@ public class FeedbackService {
     private final RedisTemplate<String, String> redisTemplate;
 
     public List<FeedbackEventDTO> getFeedbacks(String presentationId) {
-        String key = "presentation:" + presentationId + ":feedbacks";
+        String key = "presentation:" + presentationId + ":segments";
 
         List<String> rawList = redisTemplate.opsForList()
                 .range(key, 0, -1);
