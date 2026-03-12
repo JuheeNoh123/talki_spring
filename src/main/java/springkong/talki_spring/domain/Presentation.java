@@ -18,7 +18,7 @@ public class Presentation {
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long id;
+    private String id;
 
     @Column(nullable = false, name = "s3_key")
     private String s3Key;

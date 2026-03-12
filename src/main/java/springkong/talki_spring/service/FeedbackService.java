@@ -3,7 +3,7 @@ package springkong.talki_spring.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import springkong.talki_spring.dto.FeedbackEventDTO;
+import springkong.talki_spring.dto.request.FeedbackEventDTO;
 //import tools.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;

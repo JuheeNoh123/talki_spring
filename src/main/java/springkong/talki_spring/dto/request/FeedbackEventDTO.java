@@ -1,4 +1,4 @@
-package springkong.talki_spring.dto;
+package springkong.talki_spring.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
