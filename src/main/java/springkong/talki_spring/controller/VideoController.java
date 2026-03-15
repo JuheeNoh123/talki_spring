@@ -21,13 +21,19 @@ public class VideoController {
     private final UserRepository userRepository;
     // 업로드 URL 발급
     @PostMapping("/upload-url")
-    @Operation(summary = "영상 업로드 URL 발급")
+    @Operation(summary = "영상 업로드 URL 발급",
+            description =  """
+filename은 반드시 unique하게 생성해서 보내주세요.
+같은 filename이 들어오면 기존 파일이 덮어써질 수 있습니다.
+
+uuid 또는 timestamp를 붙여서 생성하는 것을 권장합니다.
+
+예시
+- profile_12345_1712345678.png
+- uuid-3f9c1d2e.png
+""")
     public ResponseEntity<?> getUploadUrl(@Parameter(
-            description = "filename은 반드시 unique하게 생성해서 보내주세요.\n" +
-                    "같은 filename이 들어오면 기존 파일이 덮어써질 수 있습니다.\n" +
-                    "uuid 또는 timestamp를 붙여서 생성하는 것을 권장합니다.",
-            example = "profile_12345_1712345678.png\n" +
-                    "uuid-3f9c1d2e.png"
+
     )@RequestBody AnalyzeResultDTO.UploadUrlDTO dto) {
 
         return ResponseEntity.ok(
