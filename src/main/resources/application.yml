@@ -3,7 +3,8 @@ spring:
     web-application-type: servlet
   application:
     name: talki_spring
-
+  jackson:
+    time-zone: Asia/Seoul
   data:
     redis:
       host: localhost

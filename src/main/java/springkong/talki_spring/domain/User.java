@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springkong.talki_spring.enums.UserType;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Entity
 @NoArgsConstructor
@@ -28,14 +30,23 @@ public class User {
     private UserType userType;
     @Column(name = "streak_days")
     private int streakDays;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public void updateProfile(String userName, String email) {
         if (userName != null) this.userName = userName;
         if (email != null) this.email = email;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
+        this.updatedAt = LocalDateTime.now();
     }
 
     // setter 대신 메서드로 수정 권장
@@ -43,6 +54,9 @@ public class User {
         this.profileImageKey = key;
     }
 
-    public void updateUserType(UserType userType) { this.userType = userType; }
+    public void updateUserType(UserType userType) {
+        this.userType = userType;
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
