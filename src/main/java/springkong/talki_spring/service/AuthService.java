@@ -40,6 +40,7 @@ public class AuthService {
                 .password(encodedPassword)
                 .email(request.getEmail())
                 .userType(UserType.BASIC)
+                .streakDays(0)
                 .profileImageKey(
                         request.getProfileImageKey() == null
                                 ? "profiles/default.png"
@@ -135,5 +136,19 @@ public class AuthService {
         user.changePassword(encoded);
 
         userRepository.save(user);
+    }
+
+    public void updateProfileType(User user, UserType type){
+        user.updateUserType(type);
+        userRepository.save(user);
+    }
+
+    public UserResponseDTO.ProfileResponse getProfile(User user){
+        return new UserResponseDTO.ProfileResponse(user.getId(),
+                                                    user.getUserName(),
+                                                    user.getUserId(),
+                                                    user.getEmail(),
+                                                    user.getProfileImageKey(),
+                                                    user.getUserType());
     }
 }

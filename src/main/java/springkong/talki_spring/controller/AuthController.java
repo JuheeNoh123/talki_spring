@@ -30,13 +30,7 @@ public class AuthController {
         return authService.signup(request);
     }
 
-    @Operation(summary = "프로필 이미지 업로드 URL 발급")
-    @PostMapping("/profile/upload-url")
-    public ResponseEntity<?> getProfileUploadUrl(@RequestBody UserRequestDTO.ProfileImageRequest request) {
-        return ResponseEntity.ok(
-                s3Service.generateProfileUploadUrl(request.getFilename())
-        );
-    }
+
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
@@ -60,34 +54,5 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "프로필 수정")
-    @PatchMapping("/profile/update")
-    public ResponseEntity<?> updateProfile(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
 
-        authService.updateProfile(
-                userDetails.getUser(),
-                userDetails.getUserName(),
-                userDetails.getEmail()
-        );
-
-        return ResponseEntity.ok("프로필 수정 완료");
-    }
-
-    @Operation(summary = "비밀번호 변경")
-    @PatchMapping("/profile/update/password")
-    public ResponseEntity<?> changePassword(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UserRequestDTO.ChangePasswordRequest request
-    ) {
-
-        authService.changePassword(
-                userDetails.getUser(),
-                request.getOldPassword(),
-                request.getNewPassword()
-        );
-
-        return ResponseEntity.ok("비밀번호 변경 완료");
-    }
 }

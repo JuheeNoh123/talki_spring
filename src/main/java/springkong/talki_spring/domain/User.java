@@ -26,6 +26,8 @@ public class User {
     @Column(name = "user_type")
     @Enumerated(EnumType.STRING)
     private UserType userType;
+    @Column(name = "streak_days")
+    private int streakDays;
 
     public void updateProfile(String userName, String email) {
         if (userName != null) this.userName = userName;
@@ -40,5 +42,7 @@ public class User {
     public void updateProfileImage(String key) {
         this.profileImageKey = key;
     }
+
+    public void updateUserType(UserType userType) { this.userType = userType; }
 
 }
