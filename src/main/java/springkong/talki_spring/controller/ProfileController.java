@@ -46,13 +46,15 @@ public class ProfileController {
     @Operation(summary = "프로필 수정")
     @PatchMapping("/update")
     public ResponseEntity<?> updateProfile(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserRequestDTO.UpdateProfileRequest updateProfileRequest
     ) {
 
         authService.updateProfile(
                 userDetails.getUser(),
-                userDetails.getUserName(),
-                userDetails.getEmail()
+                updateProfileRequest.getUserName(),
+                updateProfileRequest.getUserId(),
+                updateProfileRequest.getEmail()
         );
 
         return ResponseEntity.ok("프로필 수정 완료");

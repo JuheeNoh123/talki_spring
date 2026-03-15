@@ -38,8 +38,9 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void updateProfile(String userName, String email) {
+    public void updateProfile(String userName, String userId, String email) {
         if (userName != null) this.userName = userName;
+        if (userId != null) this.userId = userId;
         if (email != null) this.email = email;
         this.updatedAt = LocalDateTime.now();
     }

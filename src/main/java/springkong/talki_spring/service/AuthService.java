@@ -114,10 +114,11 @@ public class AuthService {
     public void updateProfile(
             User user,
             String userName,
+            String userId,
             String email
     ) {
 
-        user.updateProfile(userName, email);
+        user.updateProfile(userName, userId, email);
 
         userRepository.save(user);
     }
