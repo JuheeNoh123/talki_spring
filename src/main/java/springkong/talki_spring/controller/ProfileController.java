@@ -24,23 +24,10 @@ public class ProfileController {
     private final S3Service s3Service;
     private final AuthService authService;
 
-
-    @Operation(summary = "프로필 이미지 변경")
-    @PostMapping("/image")
-    public ResponseEntity<?> updateProfileImage(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody UserRequestDTO.UpdateProfileImageRequest request
-    ) {
-        authService.updateProfileImage(customUserDetails.getUser(), request.getKey());
-        return ResponseEntity.ok("프로필 이미지 업데이트 완료");
-    }
-
-    @Operation(summary = "프로필 이미지 다운로드 URL 조회")
-    @GetMapping("/image-url")
-    public ResponseEntity<?> getProfileImageUrl(@RequestParam String key) {
-        return ResponseEntity.ok(
-                Map.of("url", s3Service.generateDownloadUrl(key))
-        );
+    @Operation(summary = "프로필 정보 조회")
+    @GetMapping("/get")
+    public ResponseEntity<UserResponseDTO.ProfileResponse> getProfile(@AuthenticationPrincipal CustomUserDetails userDetails){
+        return  ResponseEntity.ok(authService.getProfile(userDetails.getUser()));
     }
 
     @Operation(summary = "프로필 수정")
@@ -60,8 +47,15 @@ public class ProfileController {
         return ResponseEntity.ok("프로필 수정 완료");
     }
 
+    @Operation(summary = "회원 타입 변경 (ex. basic -> premium)")
+    @PutMapping("/type/update")
+    public ResponseEntity<?> updateProfileType(@AuthenticationPrincipal CustomUserDetails userDetails, UserType type){
+        authService.updateProfileType(userDetails.getUser(), type);
+        return ResponseEntity.ok("유저 타입 변경 완료");
+    }
+
     @Operation(summary = "비밀번호 변경")
-    @PatchMapping("/update/password")
+    @PatchMapping("/password/update")
     public ResponseEntity<?> changePassword(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody UserRequestDTO.ChangePasswordRequest request
@@ -76,8 +70,27 @@ public class ProfileController {
         return ResponseEntity.ok("비밀번호 변경 완료");
     }
 
+
+    @Operation(summary = "프로필 이미지 변경")
+    @PostMapping("/image/update")
+    public ResponseEntity<?> updateProfileImage(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody UserRequestDTO.UpdateProfileImageRequest request
+    ) {
+        authService.updateProfileImage(customUserDetails.getUser(), request.getKey());
+        return ResponseEntity.ok("프로필 이미지 업데이트 완료");
+    }
+
+    @Operation(summary = "프로필 이미지 다운로드 URL 조회")
+    @GetMapping("/image/get-url")
+    public ResponseEntity<?> getProfileImageUrl(@RequestParam String key) {
+        return ResponseEntity.ok(
+                Map.of("url", s3Service.generateDownloadUrl(key))
+        );
+    }
+
     @Operation(summary = "프로필 이미지 업로드 URL 발급")
-    @PostMapping("/upload-url")
+    @PostMapping("/image/get-upload-url")
     public ResponseEntity<?> getProfileUploadUrl(@RequestBody UserRequestDTO.ProfileImageRequest request) {
         return ResponseEntity.ok(
                 s3Service.generateProfileUploadUrl(request.getFilename())
@@ -85,16 +98,7 @@ public class ProfileController {
     }
 
 
-    @Operation(summary = "회원 타입 변경 (ex. basic -> premium)")
-    @PutMapping("/update-type")
-    public ResponseEntity<?> updateProfileType(@AuthenticationPrincipal CustomUserDetails userDetails, UserType type){
-        authService.updateProfileType(userDetails.getUser(), type);
-        return ResponseEntity.ok("유저 타입 변경 완료");
-    }
 
-    @Operation(summary = "프로필 정보 조회")
-    @GetMapping("/get")
-    public ResponseEntity<UserResponseDTO.ProfileResponse> getProfile(@AuthenticationPrincipal CustomUserDetails userDetails){
-        return  ResponseEntity.ok(authService.getProfile(userDetails.getUser()));
-    }
+
+
 }
