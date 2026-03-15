@@ -91,7 +91,7 @@ public class ProfileController {
     }
 
     @Operation(summary = "프로필 정보 조회")
-    @PutMapping("/get")
+    @GetMapping("/get")
     public ResponseEntity<UserResponseDTO.ProfileResponse> getProfile(@AuthenticationPrincipal CustomUserDetails userDetails){
         return  ResponseEntity.ok(authService.getProfile(userDetails.getUser()));
     }
