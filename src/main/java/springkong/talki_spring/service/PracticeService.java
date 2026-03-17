@@ -29,6 +29,6 @@ public class PracticeService {
                     dtoBuilder.getMindSetting());
             practiceRepository.save(practice);
         }
-        user.updateStreakDays();
+        persistedUser.updateStreakDays();
     }
 }
