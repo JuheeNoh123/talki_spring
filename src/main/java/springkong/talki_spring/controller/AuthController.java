@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springkong.talki_spring.dto.request.UserRequestDTO;
 import springkong.talki_spring.dto.response.UserResponseDTO;
+import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.security.CustomUserDetails;
 import springkong.talki_spring.security.JwtProvider;
 import springkong.talki_spring.service.AuthService;
@@ -23,6 +24,7 @@ public class AuthController {
     private final AuthService authService;
     private final JwtProvider jwtProvider;
     private final S3Service s3Service;
+    private final UserRepository userRepository;
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 생성합니다")
     @PostMapping("/signup")
@@ -36,6 +38,12 @@ public class AuthController {
     @PostMapping("/login")
     public UserResponseDTO.LoginResponse login(@RequestBody UserRequestDTO.LoginRequest request) {
         return authService.login(request);
+    }
+
+    @Operation(summary = "아이디 중복 확인")
+    @GetMapping("/checkId")
+    public ResponseEntity<?> checkId(@RequestParam("id") String userId) {
+        return authService.checkUserId(userId);
     }
 
     @Operation(summary = "토큰 재발급")

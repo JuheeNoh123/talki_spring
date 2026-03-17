@@ -1,8 +1,8 @@
 package springkong.talki_spring.service;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import springkong.talki_spring.domain.User;
@@ -142,6 +142,14 @@ public class AuthService {
     public void updateProfileType(User user, UserType type){
         user.updateUserType(type);
         userRepository.save(user);
+    }
+
+    public ResponseEntity<?> checkUserId(String userId) {
+        if (userRepository.existsByUserId(userId)) {
+            throw new DuplicateUserException();
+        }else{
+            return null;
+        }
     }
 
     public UserResponseDTO.ProfileResponse getProfile(User user){
