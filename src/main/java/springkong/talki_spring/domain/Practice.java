@@ -30,7 +30,17 @@ public class Practice {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public Practice(User user, PracticeType practiceType, String thoughtRecognition, String behavioralTestResults, String mindSetting) {
+    public Practice(User user,
+                    PracticeType practiceType,
+                    String thoughtRecognition,
+                    String behavioralTestResults,
+                    String mindSetting) {
+
+        this.user = user;
+        this.practiceType = practiceType;
+        this.thoughtRecognition = thoughtRecognition;
+        this.behavioralTestResults = behavioralTestResults;
+        this.mindSetting = mindSetting;
     }
 
     @PrePersist
