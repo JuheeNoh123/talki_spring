@@ -17,12 +17,14 @@ public class PracticeService {
 
     @Transactional
     public void endPracticeAndSave(User user, PracticeDTO.PracticeDTOBuilder dtoBuilder){
-        Practice practice = new Practice(user,
-                dtoBuilder.getPracticeType(),
-                dtoBuilder.getThoughtRecognition(),
-                dtoBuilder.getBehavioralTestResults(),
-                dtoBuilder.getMindSetting());
-        practiceRepository.save(practice);
+        for (PracticeType practiceType:dtoBuilder.getPracticeType()){
+            Practice practice = new Practice(user,
+                    practiceType,
+                    dtoBuilder.getThoughtRecognition(),
+                    dtoBuilder.getBehavioralTestResults(),
+                    dtoBuilder.getMindSetting());
+            practiceRepository.save(practice);
+        }
         user.updateStreakDays();
     }
 }
