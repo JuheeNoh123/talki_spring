@@ -10,6 +10,7 @@ public class HomeResponseDTO {
     public static class HomeDTO {
         private String userName;
         private PracticeDaysDTO practiceDays;
+        private String mindSetting;
         private RecentPresentationReportDTO recentPresentationReport;
 
     }

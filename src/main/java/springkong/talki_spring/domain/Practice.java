@@ -30,6 +30,9 @@ public class Practice {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public Practice(User user, PracticeType practiceType, String thoughtRecognition, String behavioralTestResults, String mindSetting) {
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

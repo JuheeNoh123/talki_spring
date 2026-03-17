@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import springkong.talki_spring.domain.Presentation;
 import springkong.talki_spring.domain.User;
+import springkong.talki_spring.exception.NotFoundException;
 import springkong.talki_spring.repository.PresentationRepository;
 import springkong.talki_spring.repository.UserRepository;
 
@@ -53,7 +54,7 @@ public class S3Service {
         User user = null;
 
         if (userId!=null) {
-            user = userRepository.findById(userId).orElse(null);
+            user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("사용자가 없습니다."));
         }
 
 

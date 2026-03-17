@@ -48,13 +48,25 @@ public class HomeService {
         practiceDaysDTO.setPracticeDays(result);
         practiceDaysDTO.setStreakDays(user.getStreakDays());
 
+        Practice practice = practiceRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId())
+                .orElse(null);
+        if(practice!=null) homeDTO.setMindSetting(practice.getMindSetting());
+        else homeDTO.setMindSetting(null);
+
         Presentation presentation =presentationRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId())
-                .orElseThrow(() -> new NotFoundException("최근 발표 기록이 없습니다."));
-        recentPresentationReportDTO.setDateTime(presentation.getCreatedAt());
-        recentPresentationReportDTO.setTopic(presentation.getTopic());
-        Feedback feedback = feedbackRepository.findByPresentation(presentation)
-                .orElseThrow(() -> new NotFoundException("최근 발표 결과 기록이 없습니다."));
-        recentPresentationReportDTO.setTotalScore(feedback.getTotalScore());
+                .orElse(null);
+        if(presentation!=null) {
+            recentPresentationReportDTO.setDateTime(presentation.getCreatedAt());
+            recentPresentationReportDTO.setTopic(presentation.getTopic());
+            Feedback feedback = feedbackRepository.findByPresentation(presentation)
+                    .orElseThrow(() -> new NotFoundException("최근 발표 결과 기록이 없습니다."));
+            recentPresentationReportDTO.setTotalScore(feedback.getTotalScore());
+        }
+        else {
+            recentPresentationReportDTO.setTotalScore(0);
+            recentPresentationReportDTO.setTopic(null);
+            recentPresentationReportDTO.setDateTime(null);
+        }
 
         homeDTO.setUserName(user.getUserName());
         homeDTO.setPracticeDays(practiceDaysDTO);

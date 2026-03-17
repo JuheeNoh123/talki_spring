@@ -60,4 +60,8 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateStreakDays() {
+        this.streakDays++;
+    }
+
 }
