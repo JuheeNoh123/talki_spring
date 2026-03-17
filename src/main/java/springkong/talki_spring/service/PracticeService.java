@@ -11,6 +11,8 @@ import springkong.talki_spring.exception.NotFoundException;
 import springkong.talki_spring.repository.PracticeRepository;
 import springkong.talki_spring.repository.UserRepository;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class PracticeService {
@@ -29,6 +31,6 @@ public class PracticeService {
                     dtoBuilder.getMindSetting());
             practiceRepository.save(practice);
         }
-        persistedUser.updateStreakDays();
+        persistedUser.updateStreakDays(LocalDate.now());
     }
 }

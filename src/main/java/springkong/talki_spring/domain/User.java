@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springkong.talki_spring.enums.UserType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -32,6 +33,8 @@ public class User {
     private int streakDays;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @Column(name = "last_practice_date")
+    private LocalDate lastPracticeDate;
 
     @PrePersist
     protected void onCreate() {
@@ -60,8 +63,25 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateStreakDays() {
-        this.streakDays++;
+    public void updateStreakDays(LocalDate today) {
+        // 처음 연습하는 경우
+        if (this.lastPracticeDate == null) {
+            this.streakDays = 1;
+        }
+        // 이미 오늘 연습한 경우 → 증가 X
+        else if (this.lastPracticeDate.equals(today)) {
+            return;
+        }
+        // 어제 연습한 경우 → +1
+        else if (this.lastPracticeDate.equals(today.minusDays(1))) {
+            this.streakDays += 1;
+        }
+        // 끊긴 경우 → 1로 초기화
+        else {
+            this.streakDays = 1;
+        }
+
+        this.lastPracticeDate = today;
     }
 
 }
