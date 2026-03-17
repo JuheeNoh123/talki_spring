@@ -31,7 +31,7 @@ public class S3Service {
     private String bucket;
 
     // 업로드용 URL
-    public Map<String, String> generateUploadUrl(String presentationId, String filename, Long userId, String presentationType) {
+    public Map<String, String> generateUploadUrl(String presentationId, String filename, Long userId, String presentationType, String topic) {
 
         String key = "recordings/" + UUID.randomUUID() + "-" + filename;
 
@@ -62,6 +62,7 @@ public class S3Service {
                 .s3Key(key)
                 .s3Url("https://" + bucket + ".s3.amazonaws.com/" + key)
                 .presentationType(presentationType)
+                .topic(topic)
                 .status("UPLOADED")
                 .user(user)
                 .build();

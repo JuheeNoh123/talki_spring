@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface PresentationRepository extends JpaRepository<Presentation, Long> {
     Optional<Presentation> findByS3Key(String s3Key);
     Optional<Presentation> findById(String presentationId);
+    Optional<Presentation> findTopByUserIdOrderByCreatedAtDesc(Long userId);
 }

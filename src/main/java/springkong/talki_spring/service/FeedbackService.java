@@ -58,8 +58,8 @@ public class FeedbackService {
     @Transactional
     public FeedbackResponseDTO.BasicFeedbackDTO getFeedbacks(Long userId, String presentationId){
         User user = null;
-        Presentation presentation = presentationRepository.findById(presentationId).orElseThrow(()->new NotFoundException("PresentationId"));
-        Feedback feedback = feedbackRepository.findByPresentation(presentation).orElseThrow(()-> new NotFoundException("Presentation"));
+        Presentation presentation = presentationRepository.findById(presentationId).orElseThrow(()->new NotFoundException("존재하지 않는 PresentationId 입니다."));
+        Feedback feedback = feedbackRepository.findByPresentation(presentation).orElseThrow(()-> new NotFoundException("존재하지 않는 Presentation 입니다."));
         FeedbackResponseDTO.BasicFeedbackDTO responseDTO = new FeedbackResponseDTO.BasicFeedbackDTO();
 
         responseDTO.setCreatedAt(feedback.getCreatedAt());
@@ -71,7 +71,7 @@ public class FeedbackService {
         responseDTO.setCommonFeedbackResultDTO(commonFeedbackResultDTO);
 
         if (userId != null) {
-            user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User"));
+            user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자 입니다."));
 
             responseDTO.setUserName(user.getUserName());
         }

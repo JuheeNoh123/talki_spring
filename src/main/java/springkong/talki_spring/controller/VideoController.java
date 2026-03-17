@@ -37,7 +37,7 @@ uuid 또는 timestamp를 붙여서 생성하는 것을 권장합니다.
     )@RequestBody AnalyzeResultDTO.UploadUrlDTO dto) {
 
         return ResponseEntity.ok(
-                s3Service.generateUploadUrl(dto.getPresentationId(), dto.getFilename(), dto.getUserId(), dto.getPresentationType())
+                s3Service.generateUploadUrl(dto.getPresentationId(), dto.getFilename(), dto.getUserId(), dto.getPresentationType(), dto.getTopic())
         );
     }
 

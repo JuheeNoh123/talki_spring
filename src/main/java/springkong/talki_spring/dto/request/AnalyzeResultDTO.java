@@ -20,6 +20,7 @@ public class AnalyzeResultDTO {
         private String filename;
         private Long userId;
         private String presentationType;
+        private String topic;
     }
 
     @Getter

@@ -33,8 +33,11 @@ public class Presentation {
 
     private String presentationType;
 
+    private String topic;
+
     private String status; // PROCESSING, DONE
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist
