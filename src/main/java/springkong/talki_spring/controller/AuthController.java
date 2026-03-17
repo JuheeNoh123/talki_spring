@@ -41,7 +41,7 @@ public class AuthController {
     }
 
     @Operation(summary = "아이디 중복 확인")
-    @GetMapping("/checkId")
+    @GetMapping("/check-userId")
     public ResponseEntity<?> checkId(@RequestParam("id") String userId) {
         return authService.checkUserId(userId);
     }
