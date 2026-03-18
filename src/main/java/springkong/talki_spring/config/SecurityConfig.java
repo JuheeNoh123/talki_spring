@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers("/realtime/**").permitAll()
                         .requestMatchers("/analyze/**").permitAll()
                         .requestMatchers("/videos/**").permitAll()
+                        .requestMatchers("/profile/get-upload-url").permitAll()
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
