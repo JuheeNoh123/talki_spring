@@ -83,6 +83,10 @@ public class AnalyzeService {
                         .orElseThrow();
         presentation.setStatus("ANALYZING");
 
+        System.out.println("summary = " + topicDTO.getTopic_summary());
+        System.out.println("desc = " + topicDTO.getTopic_desc());
+        System.out.println("tags = " + topicDTO.getTopic_tags());
+
         // 1️⃣ presigned GET URL 생성
         String downloadUrl = s3Service.generateDownloadUrl(key);
 
