@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Map;
 @Getter
 public class AnalyzeResultDTO {
@@ -21,6 +22,13 @@ public class AnalyzeResultDTO {
         private Long userId;
         private String presentationType;
         private String topic;
+    }
+
+    @Data
+    public static class TopicDTO{
+        private String topic_summary;
+        private String topic_desc;
+        private List<String> topic_tags;
     }
 
     @Getter

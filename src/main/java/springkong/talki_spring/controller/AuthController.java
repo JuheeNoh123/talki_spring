@@ -23,8 +23,6 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtProvider jwtProvider;
-    private final S3Service s3Service;
-    private final UserRepository userRepository;
 
     @Operation(summary = "회원가입", description = "새로운 사용자를 생성합니다")
     @PostMapping("/signup")

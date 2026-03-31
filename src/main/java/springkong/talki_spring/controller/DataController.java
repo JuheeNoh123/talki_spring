@@ -61,10 +61,11 @@ public class DataController {
                     description = "발표 유형 (online_small, small, large 중 하나)",
                     example = "online_small"
             )
-            @RequestParam(defaultValue = "online_small") String presentationType
+            @RequestParam(defaultValue = "online_small") String presentationType,
+            @RequestBody AnalyzeResultDTO.TopicDTO topicDTO
     ) {
         return ResponseEntity.ok(
-                analyzeService.analyzeFromS3(key, presentationType)
+                analyzeService.analyzeFromS3(key, presentationType, topicDTO)
         );
     }
 

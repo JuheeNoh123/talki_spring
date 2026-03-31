@@ -76,7 +76,7 @@ public class AnalyzeService {
     private final FeedbackRepository feedbackRepository;
 
     @Transactional
-    public String analyzeFromS3(String key, String presentationType) {
+    public String analyzeFromS3(String key, String presentationType, AnalyzeResultDTO.TopicDTO topicDTO) {
 
         Presentation presentation =
                 presentationRepository.findByS3Key(key)
@@ -97,7 +97,10 @@ public class AnalyzeService {
                 .bodyValue(Map.of(
                         "video_url", downloadUrl,
                         "s3_key", key,
-                        "presentation_type", presentationType
+                        "presentation_type", presentationType,
+                        "topic_summary", topicDTO.getTopic_summary(),
+                        "topic_desc", topicDTO.getTopic_desc(),
+                        "topic_tags", topicDTO.getTopic_tags()
                 ))
                 .retrieve()
                 .bodyToMono(String.class)
