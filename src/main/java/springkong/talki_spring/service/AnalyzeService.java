@@ -159,6 +159,9 @@ public class AnalyzeService {
             feedback.setGazeFrontRatio(centerCount.doubleValue() / gaze.getSamples());
         }
 
+        // ===== STT =====
+        feedback.setSttText(raw.getSpeech().getText());
+
         // ===== JSON 저장 =====
         feedback.setLlmFeedbackJson(mapper.writeValueAsString(dto.getLlmFeedback()));
 

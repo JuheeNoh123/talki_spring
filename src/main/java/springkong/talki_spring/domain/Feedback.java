@@ -44,6 +44,11 @@ public class Feedback {
     private Double gazeFrontRatio; //중앙 시선 비율
     private Double poseWarningRatio; //자세 경고 비율
 
+    // ===== STT =====
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String sttText;
+
     // ===== LLM =====
     @Lob
     @Column(columnDefinition = "LONGTEXT")

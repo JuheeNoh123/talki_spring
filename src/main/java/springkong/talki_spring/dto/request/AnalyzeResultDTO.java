@@ -43,6 +43,7 @@ public class AnalyzeResultDTO {
     // ===== scores =====
 
     @Getter
+    @ToString
     public static class ScoresDTO {
         @JsonProperty("total_score")
         private Integer totalScore;
@@ -52,6 +53,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class ScoreDetail {
         private Integer gaze;
         @JsonProperty("speech_speed")
@@ -68,6 +70,7 @@ public class AnalyzeResultDTO {
     // ===== raw_data =====
 
     @Getter
+    @ToString
     public static class RawResultDTO {
         private SpeechDTO speech;
         private PoseDTO pose;
@@ -76,6 +79,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class SpeechDTO {
         private Double wpm;
         @JsonProperty("fillers_count")
@@ -92,6 +96,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class PoseDTO {
         @JsonProperty("avg_speed")
         private Double avgSpeed;
@@ -109,6 +114,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class GazeDTO {
         @JsonProperty("avg_dx")
         private Double avgDx;
@@ -126,6 +132,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class TopicResultDTO {
         @JsonProperty("on_topic")
         private Boolean onTopic;
@@ -139,6 +146,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class TopicScoresDTO {
         @JsonProperty("final")
         private Integer finalScore;
@@ -147,6 +155,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class EvidenceDTO {
         @JsonProperty("on_topic_sentences")
         private List<String> onTopicSentences;
@@ -155,6 +164,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class SentenceAnalysisDTO {
         private String sentence;
         @JsonProperty("topic_score")
@@ -167,6 +177,7 @@ public class AnalyzeResultDTO {
     }
 
     @Getter
+    @ToString
     public static class SentenceDTO {
         private String sentence;
         @JsonProperty("topic_score")
