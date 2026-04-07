@@ -14,10 +14,13 @@ public class AnalyzeResultDTO {
     @JsonProperty("s3_key")
     private String s3Key;
 
-    @JsonProperty("raw_result")
-    private RawResultDTO rawResult;
+    @JsonProperty("raw_data")
+    private RawResultDTO rawData;
 
-    private AnalysisDTO analysis;
+    private ScoresDTO scores;
+
+    @JsonProperty("llm_feedback")
+    private Map<String, String> llmFeedback;
 
     // ===== 다른 API에서 사용하는 내부 클래스 (유지) =====
 
@@ -37,19 +40,15 @@ public class AnalyzeResultDTO {
         private List<String> topic_tags;
     }
 
-    // ===== analysis =====
-
-    @Getter
-    public static class AnalysisDTO {
-        private ScoresDTO scores;
-        private FeedbackDTO feedback;
-    }
+    // ===== scores =====
 
     @Getter
     public static class ScoresDTO {
         @JsonProperty("total_score")
         private Integer totalScore;
-        private ScoreDetail detail;
+
+        @JsonProperty("score_detail")
+        private ScoreDetail scoreDetail;
     }
 
     @Getter
@@ -66,20 +65,7 @@ public class AnalyzeResultDTO {
         private Integer topicQuality;
     }
 
-    @Getter
-    public static class FeedbackDTO {
-        private String summary;
-        private String strengths;
-        private String improvements;
-        private String practice;
-        private String speech;
-        private String filler;
-        private String gaze;
-        private String pose;
-        private String topic;
-    }
-
-    // ===== raw_result =====
+    // ===== raw_data =====
 
     @Getter
     public static class RawResultDTO {

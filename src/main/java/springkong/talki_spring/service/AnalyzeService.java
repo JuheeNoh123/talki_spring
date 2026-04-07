@@ -120,11 +120,9 @@ public class AnalyzeService {
 
         User user = presentation.getUser();
 
-        AnalyzeResultDTO.AnalysisDTO analysisDto = dto.getAnalysis();
-        AnalyzeResultDTO.ScoresDTO scoresDto = analysisDto.getScores();
-        AnalyzeResultDTO.ScoreDetail scoreDetail = scoresDto.getDetail();
-        AnalyzeResultDTO.FeedbackDTO feedbackDto = analysisDto.getFeedback();
-        AnalyzeResultDTO.RawResultDTO raw = dto.getRawResult();
+        AnalyzeResultDTO.ScoresDTO scoresDto = dto.getScores();
+        AnalyzeResultDTO.ScoreDetail scoreDetail = scoresDto.getScoreDetail();
+        AnalyzeResultDTO.RawResultDTO raw = dto.getRawData();
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -162,7 +160,7 @@ public class AnalyzeService {
         }
 
         // ===== JSON 저장 =====
-        feedback.setLlmFeedbackJson(mapper.writeValueAsString(feedbackDto));
+        feedback.setLlmFeedbackJson(mapper.writeValueAsString(dto.getLlmFeedback()));
 
         String rawJson = mapper.writeValueAsString(raw);
         feedback.setRawDataJson(rawJson);
