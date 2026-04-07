@@ -3,11 +3,13 @@ package springkong.talki_spring.dto.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;
 
 @Getter
+@ToString
 public class AnalyzeResultDTO {
     @JsonProperty("s3_key")
     private String s3Key;
