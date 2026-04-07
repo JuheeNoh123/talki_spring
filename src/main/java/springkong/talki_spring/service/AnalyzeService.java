@@ -120,11 +120,11 @@ public class AnalyzeService {
 
         User user = presentation.getUser();
 
-        AnalyzeResultDTO.FeedbackDTO feedbackDto = dto.getFeedback();
-        AnalyzeResultDTO.ScoreDetail scoreDetail = feedbackDto.getScore_detail();
-        AnalyzeResultDTO.Metrics metrics = feedbackDto.getMetrics();
+        AnalyzeResultDTO.AnalysisDTO analysisDto = dto.getAnalysis();
+        AnalyzeResultDTO.ScoresDTO scoresDto = analysisDto.getScores();
+        AnalyzeResultDTO.ScoreDetail scoreDetail = scoresDto.getDetail();
+        AnalyzeResultDTO.FeedbackDTO feedbackDto = analysisDto.getFeedback();
         AnalyzeResultDTO.RawResultDTO raw = dto.getRawResult();
-
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -142,21 +142,27 @@ public class AnalyzeService {
         }
 
         // ===== 점수 =====
-        feedback.setTotalScore(feedbackDto.getScore());
-        feedback.setGazeScore(scoreDetail.getGaze());
-        feedback.setSpeechScore(scoreDetail.getSpeech_speed());
-        feedback.setPostureScore(scoreDetail.getPose());
-        feedback.setFillerScore(scoreDetail.getFillers());
+        feedback.setTotalScore(scoresDto.getTotalScore());
+        feedback.setGazeScore(scoreDetail.getGaze() != null ? scoreDetail.getGaze().doubleValue() : null);
+        feedback.setSpeechScore(scoreDetail.getSpeechSpeed() != null ? scoreDetail.getSpeechSpeed().doubleValue() : null);
+        feedback.setPostureScore(scoreDetail.getPose() != null ? scoreDetail.getPose().doubleValue() : null);
+        feedback.setFillerScore(scoreDetail.getFillers() != null ? scoreDetail.getFillers().doubleValue() : null);
+        feedback.setTopicScore(scoreDetail.getTopic() != null ? scoreDetail.getTopic().doubleValue() : null);
 
         // ===== KPI =====
-        feedback.setSpeechWpm(metrics.getSpeech_wpm());
-        feedback.setGazeFrontRatio(metrics.getGaze_front_ratio());
-        feedback.setPoseWarningRatio(raw.getPose_warning_ratio());
+        feedback.setSpeechWpm(raw.getSpeech().getWpm());
+        feedback.setPoseWarningRatio(raw.getPose().getWarningRatio());
+
+        // gaze_front_ratio: horizontal_counts의 center / samples
+        AnalyzeResultDTO.GazeDTO gaze = raw.getGaze();
+        if (gaze != null && gaze.getSamples() != null && gaze.getSamples() > 0
+                && gaze.getHorizontalCounts() != null) {
+            Integer centerCount = gaze.getHorizontalCounts().getOrDefault("center", 0);
+            feedback.setGazeFrontRatio(centerCount.doubleValue() / gaze.getSamples());
+        }
 
         // ===== JSON 저장 =====
-        feedback.setLlmFeedbackJson(
-                mapper.writeValueAsString(feedbackDto.getLlm_feedback())
-        );
+        feedback.setLlmFeedbackJson(mapper.writeValueAsString(feedbackDto));
 
         String rawJson = mapper.writeValueAsString(raw);
         feedback.setRawDataJson(rawJson);
