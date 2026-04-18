@@ -97,6 +97,7 @@ public class FeedbackService {
                     realTimeFeedback.setType(dto.getType());
                     realTimeFeedback.setStart(dto.getStart());
                     realTimeFeedback.setEnd(dto.getEnd());
+                    realTimeFeedback.setTimestamp(dto.getTimestamp());
                     list.add(realTimeFeedback);
                 }
                 realTimeFeedbackRepository.saveAll(list);
@@ -123,6 +124,7 @@ public class FeedbackService {
             resultDTO.setStart(realTimeFeedback.getStart());
             resultDTO.setEnd(realTimeFeedback.getEnd());
             resultDTO.setDuration(realTimeFeedback.getDuration());
+            resultDTO.setTimestamp(realTimeFeedback.getTimestamp());
             realTimeResultDTOList.add(resultDTO);
         }
         return realTimeResultDTOList;
