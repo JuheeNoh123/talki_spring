@@ -15,6 +15,6 @@ public class FeedbackEventDTO {
     private double start;
     private double end;
     private double duration;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime timestamp;
 }
