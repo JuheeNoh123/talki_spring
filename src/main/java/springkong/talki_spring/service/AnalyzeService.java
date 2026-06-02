@@ -104,7 +104,8 @@ public class AnalyzeService {
                         "presentation_type", presentationType,
                         "topic_summary", topicDTO.getTopic_summary(),
                         "topic_desc", topicDTO.getTopic_desc(),
-                        "topic_tags", topicDTO.getTopic_tags()
+                        "topic_tags", topicDTO.getTopic_tags(),
+                        "presentation_id", presentation.getId()
                 ))
                 .retrieve()
                 .bodyToMono(String.class)
