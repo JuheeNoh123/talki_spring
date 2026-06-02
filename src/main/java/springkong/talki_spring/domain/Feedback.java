@@ -38,6 +38,7 @@ public class Feedback {
     private Double postureScore; //제스쳐 점수
     private Double fillerScore; //필러 점수
     private Double topicScore; //주제 적합성
+    private Integer surpriseScore; //돌발 질문 평균 점수
 
     // ===== 핵심 KPI =====
     private Double speechWpm; //발화속도

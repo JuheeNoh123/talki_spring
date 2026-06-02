@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,9 @@ public class AnalyzeResultDTO {
 
     @JsonProperty("llm_feedback")
     private Map<String, String> llmFeedback;
+
+    @JsonProperty("surprise_questions")
+    private List<SurpriseQuestionDTO> surpriseQuestions = new ArrayList<>();
 
     // ===== 다른 API에서 사용하는 내부 클래스 (유지) =====
 
@@ -65,6 +69,31 @@ public class AnalyzeResultDTO {
         private Integer topicRelevance;
         @JsonProperty("topic_quality")
         private Integer topicQuality;
+        private Integer surprise;
+    }
+
+    @Getter
+    @ToString
+    public static class SurpriseQuestionDTO {
+        @JsonProperty("question_id")
+        private String questionId;
+        private String question;
+        @JsonProperty("asked_at_seconds")
+        private Double askedAtSeconds;
+        @JsonProperty("answer_text")
+        private String answerText;
+        private Boolean answered;
+        @JsonProperty("content_score")
+        private Integer contentScore;
+        @JsonProperty("gpt_score")
+        private Integer gptScore;
+        @JsonProperty("similarity_score")
+        private Integer similarityScore;
+        @JsonProperty("quality_score")
+        private Integer qualityScore;
+        @JsonProperty("coherence_score")
+        private Integer coherenceScore;
+        private String feedback;
     }
 
     // ===== raw_data =====

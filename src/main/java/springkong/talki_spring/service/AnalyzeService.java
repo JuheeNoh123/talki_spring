@@ -8,14 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import springkong.talki_spring.domain.Feedback;
 import springkong.talki_spring.domain.Presentation;
+import springkong.talki_spring.domain.SurpriseQuestion;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.AnalyzeResultDTO;
 import springkong.talki_spring.repository.FeedbackRepository;
 import springkong.talki_spring.repository.PresentationRepository;
+import springkong.talki_spring.repository.SurpriseQuestionRepository;
 //import tools.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 //@Service
@@ -74,6 +77,7 @@ public class AnalyzeService {
     private final S3Service s3Service;
     private final PresentationRepository presentationRepository;
     private final FeedbackRepository feedbackRepository;
+    private final SurpriseQuestionRepository surpriseQuestionRepository;
 
     @Transactional
     public String analyzeFromS3(String key, String presentationType, AnalyzeResultDTO.TopicDTO topicDTO) {
@@ -147,6 +151,7 @@ public class AnalyzeService {
         feedback.setPostureScore(scoreDetail.getPose() != null ? scoreDetail.getPose().doubleValue() : null);
         feedback.setFillerScore(scoreDetail.getFillers() != null ? scoreDetail.getFillers().doubleValue() : null);
         feedback.setTopicScore(scoreDetail.getTopic() != null ? scoreDetail.getTopic().doubleValue() : null);
+        feedback.setSurpriseScore(scoreDetail.getSurprise());
 
         // ===== KPI =====
         feedback.setSpeechWpm(raw.getSpeech().getWpm());
@@ -170,6 +175,27 @@ public class AnalyzeService {
         feedback.setRawDataJson(rawJson);
 
         feedbackRepository.save(feedback);
+
+        // surprise_questions 저장
+        List<AnalyzeResultDTO.SurpriseQuestionDTO> surpriseQuestions = dto.getSurpriseQuestions();
+        if (surpriseQuestions != null && !surpriseQuestions.isEmpty()) {
+            for (AnalyzeResultDTO.SurpriseQuestionDTO sq : surpriseQuestions) {
+                surpriseQuestionRepository.save(SurpriseQuestion.builder()
+                        .presentation(presentation)
+                        .questionId(sq.getQuestionId())
+                        .question(sq.getQuestion())
+                        .askedAtSeconds(sq.getAskedAtSeconds())
+                        .answerText(sq.getAnswerText())
+                        .answered(sq.getAnswered())
+                        .contentScore(sq.getContentScore())
+                        .gptScore(sq.getGptScore())
+                        .similarityScore(sq.getSimilarityScore())
+                        .qualityScore(sq.getQualityScore())
+                        .coherenceScore(sq.getCoherenceScore())
+                        .feedback(sq.getFeedback())
+                        .build());
+            }
+        }
 
         presentation.setStatus("DONE");
     }
