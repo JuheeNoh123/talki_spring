@@ -30,7 +30,12 @@ ws://43.201.182.246:8080/realtime?type=large
 
 초기 연결 시 응답 예시
 
-SERVER: {"type": "session_start", "presentationId": "94b364fe919044818558bf83665a8f2f"}
+1. 연결 시작 (1회)
+
+{
+  "type": "session_start",
+  "presentationId": "8bb25e8b2e1f415b993e54e83d044ef3"
+}
 
 
 실시간 발표 진행 중 요청/응답 예시
@@ -51,14 +56,27 @@ Client → Server Message
 
 Server → Client Message
 
-{
+2. 실시간 피드백 (매 프레임마다)
 
+{
   "type": "feedback",
-  
-  "raw_result": {gaze:{...}, pose_detected:{...}, pose_landmarks:{...}, ...},
-  
-  "data": "시선이 불안정합니다." / null
-  
+  "raw_result": {
+    "gaze": { ... },
+    "pose_detected": true,
+    "pose_landmarks": { ... },
+    "speech": { "wpm": 120, "silence": false }
+  },
+  "data": ["시선이 불안정합니다. 아래쪽을 자주 보고 있습니다."]
+}
+- data: 피드백 메시지 배열, 없으면 []
+
+3. 돌발 질문 (발표 중 조건 충족 시)
+
+{
+  "type": "surprise_question",
+  "question_id": "9cca2dda97634dab8318ab3b5ce87b5e",
+  "question": "발표에서 가장 중요하게 전달하고자 한 핵심 메시지는 무엇인가요?",
+  "time_limit": 30
 }
 """
     )
