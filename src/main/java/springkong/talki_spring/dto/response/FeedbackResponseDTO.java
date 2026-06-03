@@ -15,6 +15,7 @@ public class FeedbackResponseDTO {
         String s3Key;
         CommonFeedbackResultDTO commonFeedbackResultDTO;
         List<RealTimeResultDTO> realTimeResultDTO;
+        List<SurpriseQuestionResultDTO> surpriseQuestions;
     }
 
     @Data
@@ -30,6 +31,7 @@ public class FeedbackResponseDTO {
         private Double speechWpm;
         private Integer totalScore;
         private Double topicScore;
+        private Integer surpriseScore;
     }
 
     @Data
@@ -41,5 +43,21 @@ public class FeedbackResponseDTO {
         private Double duration;
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime timestamp;
+    }
+
+    @Data
+    public static class SurpriseQuestionResultDTO {
+        private Long id;
+        private String questionId;
+        private String question;
+        private Double askedAtSeconds;
+        private String answerText;
+        private Boolean answered;
+        private Integer contentScore;
+        private Integer gptScore;
+        private Integer similarityScore;
+        private Integer qualityScore;
+        private Integer coherenceScore;
+        private String feedback;
     }
 }

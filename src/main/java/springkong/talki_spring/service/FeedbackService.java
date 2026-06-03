@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import springkong.talki_spring.domain.Feedback;
 import springkong.talki_spring.domain.Presentation;
 import springkong.talki_spring.domain.RealTimeFeedback;
+import springkong.talki_spring.domain.SurpriseQuestion;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.FeedbackEventDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import springkong.talki_spring.exception.NotFoundException;
 import springkong.talki_spring.repository.FeedbackRepository;
 import springkong.talki_spring.repository.PresentationRepository;
 import springkong.talki_spring.repository.RealTimeFeedbackRepository;
+import springkong.talki_spring.repository.SurpriseQuestionRepository;
 import springkong.talki_spring.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final PresentationRepository presentationRepository;
     private final RealTimeFeedbackRepository realTimeFeedbackRepository;
+    private final SurpriseQuestionRepository surpriseQuestionRepository;
     private final ObjectMapper objectMapper;
 
     public List<FeedbackEventDTO> getRealTimeFeedbacks(String presentationId) {
@@ -69,6 +72,11 @@ public class FeedbackService {
 
         FeedbackResponseDTO.CommonFeedbackResultDTO commonFeedbackResultDTO = getCommonFeedbackResultDTO(feedback);
         responseDTO.setCommonFeedbackResultDTO(commonFeedbackResultDTO);
+
+        List<SurpriseQuestion> surpriseQuestions = surpriseQuestionRepository.findByPresentation(presentation);
+        if (!surpriseQuestions.isEmpty()) {
+            responseDTO.setSurpriseQuestions(getSurpriseQuestionResultDTOs(surpriseQuestions));
+        }
 
         if (userId != null) {
             user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자 입니다."));
@@ -130,6 +138,27 @@ public class FeedbackService {
         return realTimeResultDTOList;
     }
 
+    private static List<FeedbackResponseDTO.SurpriseQuestionResultDTO> getSurpriseQuestionResultDTOs(List<SurpriseQuestion> list) {
+        List<FeedbackResponseDTO.SurpriseQuestionResultDTO> result = new ArrayList<>();
+        for (SurpriseQuestion sq : list) {
+            FeedbackResponseDTO.SurpriseQuestionResultDTO dto = new FeedbackResponseDTO.SurpriseQuestionResultDTO();
+            dto.setId(sq.getId());
+            dto.setQuestionId(sq.getQuestionId());
+            dto.setQuestion(sq.getQuestion());
+            dto.setAskedAtSeconds(sq.getAskedAtSeconds());
+            dto.setAnswerText(sq.getAnswerText());
+            dto.setAnswered(sq.getAnswered());
+            dto.setContentScore(sq.getContentScore());
+            dto.setGptScore(sq.getGptScore());
+            dto.setSimilarityScore(sq.getSimilarityScore());
+            dto.setQualityScore(sq.getQualityScore());
+            dto.setCoherenceScore(sq.getCoherenceScore());
+            dto.setFeedback(sq.getFeedback());
+            result.add(dto);
+        }
+        return result;
+    }
+
     private static FeedbackResponseDTO.CommonFeedbackResultDTO getCommonFeedbackResultDTO(Feedback feedback) {
         FeedbackResponseDTO.CommonFeedbackResultDTO commonFeedbackResultDTO = new FeedbackResponseDTO.CommonFeedbackResultDTO();
         commonFeedbackResultDTO.setFillerScore(feedback.getFillerScore());
@@ -143,6 +172,7 @@ public class FeedbackService {
         commonFeedbackResultDTO.setSpeechWpm(feedback.getSpeechWpm());
         commonFeedbackResultDTO.setTotalScore(feedback.getTotalScore());
         commonFeedbackResultDTO.setTopicScore(feedback.getTopicScore());
+        commonFeedbackResultDTO.setSurpriseScore(feedback.getSurpriseScore());
         return commonFeedbackResultDTO;
     }
 }
