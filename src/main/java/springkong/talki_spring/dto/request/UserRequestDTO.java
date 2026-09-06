@@ -49,6 +49,7 @@ public class UserRequestDTO {
     public static class UpdateProfileRequest {
         private String userName;
         private String email;
+        private String userId;
     }
 
     @Getter

@@ -8,14 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import springkong.talki_spring.domain.Feedback;
 import springkong.talki_spring.domain.Presentation;
+import springkong.talki_spring.domain.SurpriseQuestion;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.AnalyzeResultDTO;
 import springkong.talki_spring.repository.FeedbackRepository;
 import springkong.talki_spring.repository.PresentationRepository;
+import springkong.talki_spring.repository.SurpriseQuestionRepository;
 //import tools.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 //@Service
@@ -74,14 +77,19 @@ public class AnalyzeService {
     private final S3Service s3Service;
     private final PresentationRepository presentationRepository;
     private final FeedbackRepository feedbackRepository;
+    private final SurpriseQuestionRepository surpriseQuestionRepository;
 
     @Transactional
-    public String analyzeFromS3(String key, String presentationType) {
+    public String analyzeFromS3(String key, String presentationType, AnalyzeResultDTO.TopicDTO topicDTO) {
 
         Presentation presentation =
                 presentationRepository.findByS3Key(key)
                         .orElseThrow();
         presentation.setStatus("ANALYZING");
+
+        System.out.println("summary = " + topicDTO.getTopic_summary());
+        System.out.println("desc = " + topicDTO.getTopic_desc());
+        System.out.println("tags = " + topicDTO.getTopic_tags());
 
         // 1️⃣ presigned GET URL 생성
         String downloadUrl = s3Service.generateDownloadUrl(key);
@@ -97,7 +105,11 @@ public class AnalyzeService {
                 .bodyValue(Map.of(
                         "video_url", downloadUrl,
                         "s3_key", key,
-                        "presentation_type", presentationType
+                        "presentation_type", presentationType,
+                        "topic_summary", topicDTO.getTopic_summary(),
+                        "topic_desc", topicDTO.getTopic_desc(),
+                        "topic_tags", topicDTO.getTopic_tags(),
+                        "presentation_id", presentation.getId()
                 ))
                 .retrieve()
                 .bodyToMono(String.class)
@@ -113,11 +125,9 @@ public class AnalyzeService {
 
         User user = presentation.getUser();
 
-        AnalyzeResultDTO.FeedbackDTO feedbackDto = dto.getFeedback();
-        AnalyzeResultDTO.ScoreDetail scoreDetail = feedbackDto.getScore_detail();
-        AnalyzeResultDTO.Metrics metrics = feedbackDto.getMetrics();
-        AnalyzeResultDTO.RawResultDTO raw = dto.getRawResult();
-
+        AnalyzeResultDTO.ScoresDTO scoresDto = dto.getScores();
+        AnalyzeResultDTO.ScoreDetail scoreDetail = scoresDto.getScoreDetail();
+        AnalyzeResultDTO.RawResultDTO raw = dto.getRawData();
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -135,26 +145,57 @@ public class AnalyzeService {
         }
 
         // ===== 점수 =====
-        feedback.setTotalScore(feedbackDto.getScore());
-        feedback.setGazeScore(scoreDetail.getGaze());
-        feedback.setSpeechScore(scoreDetail.getSpeech_speed());
-        feedback.setPostureScore(scoreDetail.getPose());
-        feedback.setFillerScore(scoreDetail.getFillers());
+        feedback.setTotalScore(scoresDto.getTotalScore());
+        feedback.setGazeScore(scoreDetail.getGaze() != null ? scoreDetail.getGaze().doubleValue() : null);
+        feedback.setSpeechScore(scoreDetail.getSpeechSpeed() != null ? scoreDetail.getSpeechSpeed().doubleValue() : null);
+        feedback.setPostureScore(scoreDetail.getPose() != null ? scoreDetail.getPose().doubleValue() : null);
+        feedback.setFillerScore(scoreDetail.getFillers() != null ? scoreDetail.getFillers().doubleValue() : null);
+        feedback.setTopicScore(scoreDetail.getTopic() != null ? scoreDetail.getTopic().doubleValue() : null);
+        feedback.setSurpriseScore(scoreDetail.getSurprise());
 
         // ===== KPI =====
-        feedback.setSpeechWpm(metrics.getSpeech_wpm());
-        feedback.setGazeFrontRatio(metrics.getGaze_front_ratio());
-        feedback.setPoseWarningRatio(raw.getPose_warning_ratio());
+        feedback.setSpeechWpm(raw.getSpeech().getWpm());
+        feedback.setPoseWarningRatio(raw.getPose().getWarningRatio());
+
+        // gaze_front_ratio: horizontal_counts의 center / samples
+        AnalyzeResultDTO.GazeDTO gaze = raw.getGaze();
+        if (gaze != null && gaze.getSamples() != null && gaze.getSamples() > 0
+                && gaze.getHorizontalCounts() != null) {
+            Integer centerCount = gaze.getHorizontalCounts().getOrDefault("center", 0);
+            feedback.setGazeFrontRatio(centerCount.doubleValue() / gaze.getSamples());
+        }
+
+        // ===== STT =====
+        feedback.setSttText(raw.getSpeech().getText());
 
         // ===== JSON 저장 =====
-        feedback.setLlmFeedbackJson(
-                mapper.writeValueAsString(feedbackDto.getLlm_feedback())
-        );
+        feedback.setLlmFeedbackJson(mapper.writeValueAsString(dto.getLlmFeedback()));
 
         String rawJson = mapper.writeValueAsString(raw);
         feedback.setRawDataJson(rawJson);
 
         feedbackRepository.save(feedback);
+
+        // surprise_questions 저장
+        List<AnalyzeResultDTO.SurpriseQuestionDTO> surpriseQuestions = dto.getSurpriseQuestions();
+        if (surpriseQuestions != null && !surpriseQuestions.isEmpty()) {
+            for (AnalyzeResultDTO.SurpriseQuestionDTO sq : surpriseQuestions) {
+                surpriseQuestionRepository.save(SurpriseQuestion.builder()
+                        .presentation(presentation)
+                        .questionId(sq.getQuestionId())
+                        .question(sq.getQuestion())
+                        .askedAtSeconds(sq.getAskedAtSeconds())
+                        .answerText(sq.getAnswerText())
+                        .answered(sq.getAnswered())
+                        .contentScore(sq.getContentScore())
+                        .gptScore(sq.getGptScore())
+                        .similarityScore(sq.getSimilarityScore())
+                        .qualityScore(sq.getQualityScore())
+                        .coherenceScore(sq.getCoherenceScore())
+                        .feedback(sq.getFeedback())
+                        .build());
+            }
+        }
 
         presentation.setStatus("DONE");
     }

@@ -1,8 +1,8 @@
 package springkong.talki_spring.service;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import springkong.talki_spring.domain.User;
@@ -13,7 +13,7 @@ import springkong.talki_spring.exception.DuplicateUserException;
 import springkong.talki_spring.exception.InvalidPasswordException;
 import springkong.talki_spring.repository.UserRepository;
 import springkong.talki_spring.security.JwtProvider;
-import springkong.talki_spring.exception.UserNotFoundException;
+import springkong.talki_spring.exception.NotFoundException;
 import java.util.concurrent.TimeUnit;
 
 
@@ -40,6 +40,7 @@ public class AuthService {
                 .password(encodedPassword)
                 .email(request.getEmail())
                 .userType(UserType.BASIC)
+                .streakDays(0)
                 .profileImageKey(
                         request.getProfileImageKey() == null
                                 ? "profiles/default.png"
@@ -55,7 +56,7 @@ public class AuthService {
     public UserResponseDTO.LoginResponse login(UserRequestDTO.LoginRequest request) {
 
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidPasswordException("비밀번호가 틀렸습니다.");
@@ -113,10 +114,11 @@ public class AuthService {
     public void updateProfile(
             User user,
             String userName,
+            String userId,
             String email
     ) {
 
-        user.updateProfile(userName, email);
+        user.updateProfile(userName, userId, email);
 
         userRepository.save(user);
     }
@@ -135,5 +137,27 @@ public class AuthService {
         user.changePassword(encoded);
 
         userRepository.save(user);
+    }
+
+    public void updateProfileType(User user, UserType type){
+        user.updateUserType(type);
+        userRepository.save(user);
+    }
+
+    public ResponseEntity<?> checkUserId(String userId) {
+        if (userRepository.existsByUserId(userId)) {
+            throw new DuplicateUserException();
+        }else{
+            return null;
+        }
+    }
+
+    public UserResponseDTO.ProfileResponse getProfile(User user){
+        return new UserResponseDTO.ProfileResponse(user.getId(),
+                                                    user.getUserName(),
+                                                    user.getUserId(),
+                                                    user.getEmail(),
+                                                    user.getProfileImageKey(),
+                                                    user.getUserType());
     }
 }

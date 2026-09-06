@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import springkong.talki_spring.domain.Presentation;
 import springkong.talki_spring.domain.User;
+import springkong.talki_spring.exception.NotFoundException;
 import springkong.talki_spring.repository.PresentationRepository;
 import springkong.talki_spring.repository.UserRepository;
 
@@ -31,7 +32,7 @@ public class S3Service {
     private String bucket;
 
     // 업로드용 URL
-    public Map<String, String> generateUploadUrl(String presentationId, String filename, Long userId, String presentationType) {
+    public Map<String, String> generateUploadUrl(String presentationId, String filename, Long userId, String presentationType, String topic) {
 
         String key = "recordings/" + UUID.randomUUID() + "-" + filename;
 
@@ -50,14 +51,19 @@ public class S3Service {
         PresignedPutObjectRequest presignedRequest =
                 presigner.presignPutObject(presignRequest);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = null;
+
+        if (userId!=null) {
+            user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("사용자가 없습니다."));
+        }
+
 
         Presentation presentation = Presentation.builder()
                 .id(presentationId)
                 .s3Key(key)
                 .s3Url("https://" + bucket + ".s3.amazonaws.com/" + key)
                 .presentationType(presentationType)
+                .topic(topic)
                 .status("UPLOADED")
                 .user(user)
                 .build();

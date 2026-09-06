@@ -26,15 +26,18 @@ public class Presentation {
     @Column(name = "s3_Url")
     private String s3Url;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     private String presentationType;
 
+    private String topic;
+
     private String status; // PROCESSING, DONE
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist

@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springkong.talki_spring.dto.request.UserRequestDTO;
+import springkong.talki_spring.dto.response.UserResponseDTO;
+import springkong.talki_spring.enums.UserType;
 import springkong.talki_spring.security.CustomUserDetails;
 import springkong.talki_spring.service.AuthService;
 import springkong.talki_spring.service.S3Service;
@@ -22,9 +24,55 @@ public class ProfileController {
     private final S3Service s3Service;
     private final AuthService authService;
 
+    @Operation(summary = "프로필 정보 조회")
+    @GetMapping("/get")
+    public ResponseEntity<UserResponseDTO.ProfileResponse> getProfile(@AuthenticationPrincipal CustomUserDetails userDetails){
+        return  ResponseEntity.ok(authService.getProfile(userDetails.getUser()));
+    }
+
+    @Operation(summary = "프로필 수정")
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserRequestDTO.UpdateProfileRequest updateProfileRequest
+    ) {
+
+        authService.updateProfile(
+                userDetails.getUser(),
+                updateProfileRequest.getUserName(),
+                updateProfileRequest.getUserId(),
+                updateProfileRequest.getEmail()
+        );
+
+        return ResponseEntity.ok("프로필 수정 완료");
+    }
+
+    @Operation(summary = "회원 타입 변경 (ex. basic -> premium)")
+    @PutMapping("/type/update")
+    public ResponseEntity<?> updateProfileType(@AuthenticationPrincipal CustomUserDetails userDetails, UserType type){
+        authService.updateProfileType(userDetails.getUser(), type);
+        return ResponseEntity.ok("유저 타입 변경 완료");
+    }
+
+    @Operation(summary = "비밀번호 변경")
+    @PatchMapping("/password/update")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody UserRequestDTO.ChangePasswordRequest request
+    ) {
+
+        authService.changePassword(
+                userDetails.getUser(),
+                request.getOldPassword(),
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.ok("비밀번호 변경 완료");
+    }
+
 
     @Operation(summary = "프로필 이미지 변경")
-    @PostMapping("/image")
+    @PostMapping("/image/update")
     public ResponseEntity<?> updateProfileImage(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody UserRequestDTO.UpdateProfileImageRequest request
@@ -34,10 +82,23 @@ public class ProfileController {
     }
 
     @Operation(summary = "프로필 이미지 다운로드 URL 조회")
-    @GetMapping("/image-url")
+    @GetMapping("/image/get-url")
     public ResponseEntity<?> getProfileImageUrl(@RequestParam String key) {
         return ResponseEntity.ok(
                 Map.of("url", s3Service.generateDownloadUrl(key))
         );
     }
+
+    @Operation(summary = "프로필 이미지 업로드 URL 발급")
+    @PostMapping("/image/get-upload-url")
+    public ResponseEntity<?> getProfileUploadUrl(@RequestBody UserRequestDTO.ProfileImageRequest request) {
+        return ResponseEntity.ok(
+                s3Service.generateProfileUploadUrl(request.getFilename())
+        );
+    }
+
+
+
+
+
 }

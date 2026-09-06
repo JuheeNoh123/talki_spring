@@ -21,6 +21,7 @@ public class Feedback {
     // 🔥 1:1 매핑
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "presentation_id", unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Presentation presentation;
 
     // nullable 허용
@@ -37,11 +38,17 @@ public class Feedback {
     private Double postureScore; //제스쳐 점수
     private Double fillerScore; //필러 점수
     private Double topicScore; //주제 적합성
+    private Integer surpriseScore; //돌발 질문 평균 점수
 
     // ===== 핵심 KPI =====
     private Double speechWpm; //발화속도
     private Double gazeFrontRatio; //중앙 시선 비율
     private Double poseWarningRatio; //자세 경고 비율
+
+    // ===== STT =====
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String sttText;
 
     // ===== LLM =====
     @Lob

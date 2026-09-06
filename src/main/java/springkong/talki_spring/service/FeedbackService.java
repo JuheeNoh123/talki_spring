@@ -3,9 +3,24 @@ package springkong.talki_spring.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import springkong.talki_spring.domain.Feedback;
+import springkong.talki_spring.domain.Presentation;
+import springkong.talki_spring.domain.RealTimeFeedback;
+import springkong.talki_spring.domain.SurpriseQuestion;
+import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.request.FeedbackEventDTO;
-//import tools.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import springkong.talki_spring.dto.response.FeedbackResponseDTO;
+import springkong.talki_spring.enums.UserType;
+import springkong.talki_spring.exception.NotFoundException;
+import springkong.talki_spring.repository.FeedbackRepository;
+import springkong.talki_spring.repository.PresentationRepository;
+import springkong.talki_spring.repository.RealTimeFeedbackRepository;
+import springkong.talki_spring.repository.SurpriseQuestionRepository;
+import springkong.talki_spring.repository.UserRepository;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,8 +29,14 @@ import java.util.Objects;
 public class FeedbackService {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserRepository userRepository;
+    private final FeedbackRepository feedbackRepository;
+    private final PresentationRepository presentationRepository;
+    private final RealTimeFeedbackRepository realTimeFeedbackRepository;
+    private final SurpriseQuestionRepository surpriseQuestionRepository;
+    private final ObjectMapper objectMapper;
 
-    public List<FeedbackEventDTO> getFeedbacks(String presentationId) {
+    public List<FeedbackEventDTO> getRealTimeFeedbacks(String presentationId) {
         String key = "presentation:" + presentationId + ":segments";
 
         List<String> rawList = redisTemplate.opsForList()
@@ -23,17 +44,135 @@ public class FeedbackService {
 
         if (rawList == null) return List.of();
 
-        ObjectMapper mapper = new ObjectMapper();
+
 
         return rawList.stream()
                 .map(json -> {
                     try {
-                        return mapper.readValue(json, FeedbackEventDTO.class);
+                        return objectMapper.readValue(json, FeedbackEventDTO.class);
                     } catch (Exception e) {
                         return null;
                     }
                 })
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    @Transactional
+    public FeedbackResponseDTO.BasicFeedbackDTO getFeedbacks(Long userId, String presentationId){
+        User user = null;
+        Presentation presentation = presentationRepository.findById(presentationId).orElseThrow(()->new NotFoundException("존재하지 않는 PresentationId 입니다."));
+        Feedback feedback = feedbackRepository.findByPresentation(presentation).orElseThrow(()-> new NotFoundException("존재하지 않는 Presentation 입니다."));
+        FeedbackResponseDTO.BasicFeedbackDTO responseDTO = new FeedbackResponseDTO.BasicFeedbackDTO();
+
+        responseDTO.setCreatedAt(feedback.getCreatedAt());
+        responseDTO.setPresentationType(presentation.getPresentationType());
+        //responseDTO.setUserName(null);
+        responseDTO.setS3Key(presentation.getS3Key());
+
+        FeedbackResponseDTO.CommonFeedbackResultDTO commonFeedbackResultDTO = getCommonFeedbackResultDTO(feedback);
+        responseDTO.setCommonFeedbackResultDTO(commonFeedbackResultDTO);
+
+        List<SurpriseQuestion> surpriseQuestions = surpriseQuestionRepository.findByPresentation(presentation);
+        if (!surpriseQuestions.isEmpty()) {
+            responseDTO.setSurpriseQuestions(getSurpriseQuestionResultDTOs(surpriseQuestions));
+        }
+
+        if (userId != null) {
+            user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자 입니다."));
+
+            responseDTO.setUserName(user.getUserName());
+        }
+
+        if (user == null) {
+            // 비회원
+            presentationRepository.delete(presentation);
+
+            return responseDTO;
+        }
+
+        else {
+            List<RealTimeFeedback> existing = realTimeFeedbackRepository.findByPresentation(presentation);
+
+            if (existing.isEmpty()) {
+
+                List<FeedbackEventDTO> feedbackEventDTO = getRealTimeFeedbacks(presentationId);
+                List<RealTimeFeedback> list = new ArrayList<>();
+                for (FeedbackEventDTO dto : feedbackEventDTO) {
+                    RealTimeFeedback realTimeFeedback = new RealTimeFeedback();
+                    realTimeFeedback.setDuration(dto.getDuration());
+                    realTimeFeedback.setPresentation(presentation);
+                    realTimeFeedback.setType(dto.getType());
+                    realTimeFeedback.setStart(dto.getStart());
+                    realTimeFeedback.setEnd(dto.getEnd());
+                    realTimeFeedback.setTimestamp(dto.getTimestamp());
+                    list.add(realTimeFeedback);
+                }
+                realTimeFeedbackRepository.saveAll(list);
+            }
+            if(user.getUserType() == UserType.BASIC){
+                return responseDTO;
+            }
+            // PREMIUM 회원
+            List<RealTimeFeedback> realTimeFeedbackList = realTimeFeedbackRepository.findByPresentation(presentation);
+            List<FeedbackResponseDTO.RealTimeResultDTO> realTimeResultDTOList = getRealTimeResultDTOS(realTimeFeedbackList);
+
+            responseDTO.setRealTimeResultDTO(realTimeResultDTOList);
+            return responseDTO;
+        }
+
+    }
+
+    private static List<FeedbackResponseDTO.RealTimeResultDTO> getRealTimeResultDTOS(List<RealTimeFeedback> realTimeFeedbackList) {
+        List<FeedbackResponseDTO.RealTimeResultDTO> realTimeResultDTOList = new ArrayList<>();
+        for (RealTimeFeedback realTimeFeedback : realTimeFeedbackList) {
+            FeedbackResponseDTO.RealTimeResultDTO resultDTO = new FeedbackResponseDTO.RealTimeResultDTO();
+            resultDTO.setId(realTimeFeedback.getId());
+            resultDTO.setType(realTimeFeedback.getType());
+            resultDTO.setStart(realTimeFeedback.getStart());
+            resultDTO.setEnd(realTimeFeedback.getEnd());
+            resultDTO.setDuration(realTimeFeedback.getDuration());
+            resultDTO.setTimestamp(realTimeFeedback.getTimestamp());
+            realTimeResultDTOList.add(resultDTO);
+        }
+        return realTimeResultDTOList;
+    }
+
+    private static List<FeedbackResponseDTO.SurpriseQuestionResultDTO> getSurpriseQuestionResultDTOs(List<SurpriseQuestion> list) {
+        List<FeedbackResponseDTO.SurpriseQuestionResultDTO> result = new ArrayList<>();
+        for (SurpriseQuestion sq : list) {
+            FeedbackResponseDTO.SurpriseQuestionResultDTO dto = new FeedbackResponseDTO.SurpriseQuestionResultDTO();
+            dto.setId(sq.getId());
+            dto.setQuestionId(sq.getQuestionId());
+            dto.setQuestion(sq.getQuestion());
+            dto.setAskedAtSeconds(sq.getAskedAtSeconds());
+            dto.setAnswerText(sq.getAnswerText());
+            dto.setAnswered(sq.getAnswered());
+            dto.setContentScore(sq.getContentScore());
+            dto.setGptScore(sq.getGptScore());
+            dto.setSimilarityScore(sq.getSimilarityScore());
+            dto.setQualityScore(sq.getQualityScore());
+            dto.setCoherenceScore(sq.getCoherenceScore());
+            dto.setFeedback(sq.getFeedback());
+            result.add(dto);
+        }
+        return result;
+    }
+
+    private static FeedbackResponseDTO.CommonFeedbackResultDTO getCommonFeedbackResultDTO(Feedback feedback) {
+        FeedbackResponseDTO.CommonFeedbackResultDTO commonFeedbackResultDTO = new FeedbackResponseDTO.CommonFeedbackResultDTO();
+        commonFeedbackResultDTO.setFillerScore(feedback.getFillerScore());
+        commonFeedbackResultDTO.setGazeFrontRatio(feedback.getGazeFrontRatio());
+        commonFeedbackResultDTO.setGazeScore(feedback.getGazeScore());
+        commonFeedbackResultDTO.setLlmFeedbackJson(feedback.getLlmFeedbackJson());
+        commonFeedbackResultDTO.setPoseWarningRatio(feedback.getPoseWarningRatio());
+        commonFeedbackResultDTO.setPostureScore(feedback.getPostureScore());
+        commonFeedbackResultDTO.setRawDataJson(feedback.getRawDataJson());
+        commonFeedbackResultDTO.setSpeechScore(feedback.getSpeechScore());
+        commonFeedbackResultDTO.setSpeechWpm(feedback.getSpeechWpm());
+        commonFeedbackResultDTO.setTotalScore(feedback.getTotalScore());
+        commonFeedbackResultDTO.setTopicScore(feedback.getTopicScore());
+        commonFeedbackResultDTO.setSurpriseScore(feedback.getSurpriseScore());
+        return commonFeedbackResultDTO;
     }
 }

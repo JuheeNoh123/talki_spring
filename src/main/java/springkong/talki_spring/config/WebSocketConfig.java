@@ -8,6 +8,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+import springkong.talki_spring.websocket.PracticeRealtimeWebSocketHandler;
 import springkong.talki_spring.websocket.RealtimeWebSocketHandler;
 
 @Configuration
@@ -16,6 +17,7 @@ import springkong.talki_spring.websocket.RealtimeWebSocketHandler;
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final RealtimeWebSocketHandler handler;
+    private final PracticeRealtimeWebSocketHandler practiceHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -23,7 +25,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(handler, "/realtime")
                 .setAllowedOrigins("*");
 
-
+        registry.addHandler(practiceHandler, "/practice/realtime")
+                .setAllowedOrigins("*");
     }
     @Bean //json 크기 설정
     public ServletServerContainerFactoryBean createWebSocketContainer() {
