@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import springkong.talki_spring.domain.Feedback;
-import springkong.talki_spring.domain.Practice;
+import springkong.talki_spring.domain.PracticeSession;
 import springkong.talki_spring.domain.Presentation;
 import springkong.talki_spring.domain.User;
 import springkong.talki_spring.dto.response.HomeResponseDTO;
 import springkong.talki_spring.exception.NotFoundException;
 import springkong.talki_spring.repository.FeedbackRepository;
-import springkong.talki_spring.repository.PracticeRepository;
+import springkong.talki_spring.repository.PracticeSessionRepository;
 import springkong.talki_spring.repository.PresentationRepository;
 
 import java.time.DayOfWeek;
@@ -21,7 +21,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class HomeService {
-    private final PracticeRepository practiceRepository;
+    private final PracticeSessionRepository practiceSessionRepository;
     private final PresentationRepository presentationRepository;
     private final FeedbackRepository feedbackRepository;
 
@@ -37,9 +37,9 @@ public class HomeService {
         LocalDateTime startDateTime = startOfWeek.atStartOfDay(); //localdatetime으로 바꾸기
         LocalDateTime endDateTime = endOfWeek.atTime(23, 59, 59);
 
-        List<Practice> practices=practiceRepository.findByUserIdAndCreatedAtBetween(user.getId(), startDateTime, endDateTime);
-        for (Practice practice : practices) {
-            practiceDays.add(practice.getCreatedAt().getDayOfWeek());
+        List<PracticeSession> practiceSessions = practiceSessionRepository.findByUserIdAndCreatedAtBetween(user.getId(), startDateTime, endDateTime);
+        for (PracticeSession practiceSession : practiceSessions) {
+            practiceDays.add(practiceSession.getCreatedAt().getDayOfWeek());
         }
         List<String> result = practiceDays.stream()
                 .map(day -> day.name().substring(0, 3)) // MON, TUE
@@ -48,9 +48,9 @@ public class HomeService {
         practiceDaysDTO.setPracticeDays(result);
         practiceDaysDTO.setStreakDays(user.getStreakDays());
 
-        Practice practice = practiceRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId())
+        PracticeSession practiceSession = practiceSessionRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId())
                 .orElse(null);
-        if(practice!=null) homeDTO.setMindSetting(practice.getMindSetting());
+        if(practiceSession!=null) homeDTO.setMindSetting(practiceSession.displayThought());
         else homeDTO.setMindSetting(null);
 
         Presentation presentation =presentationRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId())

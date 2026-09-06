@@ -1,6 +1,7 @@
 package springkong.talki_spring.websocket;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
@@ -19,6 +20,9 @@ public class FastApiWebSocketClient {
     //    매 connect마다 new 생성 시 → native thread 누적 → OOM
     private final ReactorNettyWebSocketClient wsClient = new ReactorNettyWebSocketClient();
 
+    @Value("${fastapi.url}")
+    private String fastApiUrl;
+
     // ✅ clientSessionId → FastAPI 연결 컨텍스트 (다중 세션 지원)
     //    ConcurrentHashMap: 다수 사용자 동시 접속 thread-safe 보장
     private final Map<String, FastApiConnectionContext> connections = new ConcurrentHashMap<>();
@@ -29,7 +33,19 @@ public class FastApiWebSocketClient {
      * - Disposable을 Context에 저장하여 lifecycle 관리
      */
     public void connectForSession(String clientSessionId, String presentationType, Consumer<String> onMessage) {
-        URI uri = URI.create("ws://localhost:8000/realtime?type=" + presentationType);
+        connect(clientSessionId, "/realtime?type=" + presentationType, onMessage);
+    }
+
+    /**
+     * 연습탭 4단계(하위단계 실시간 분석)용 FastAPI WebSocket 연결
+     * 실전 탭과 동일한 연결/중계 로직을 재사용하고, 대상 경로만 다르다.
+     */
+    public void connectForPracticeSession(String clientSessionId, String practiceSessionId, String subStep, Consumer<String> onMessage) {
+        connect(clientSessionId, "/practice/realtime?sessionId=" + practiceSessionId + "&subStep=" + subStep, onMessage);
+    }
+
+    private void connect(String clientSessionId, String pathAndQuery, Consumer<String> onMessage) {
+        URI uri = URI.create(fastApiUrl.replaceFirst("^http", "ws") + pathAndQuery);
 
         FastApiConnectionContext context = new FastApiConnectionContext(clientSessionId);
         connections.put(clientSessionId, context);

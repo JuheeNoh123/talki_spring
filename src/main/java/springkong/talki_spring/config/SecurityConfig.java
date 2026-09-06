@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll() // 누구나 접근 가능한 API 경로
                         .requestMatchers("/ws/**").permitAll() // WebSocket 핸드쉐이크 허용
                         .requestMatchers("/realtime/**").permitAll()
+                        .requestMatchers("/practice/realtime/**").permitAll() // 연습탭 WS 핸드쉐이크 허용 (REST /practice/sessions/**는 인증 필요)
                         .requestMatchers("/analyze/**").permitAll()
                         .requestMatchers("/videos/**").permitAll()
                         .requestMatchers("/profile/image/get-upload-url").permitAll()
